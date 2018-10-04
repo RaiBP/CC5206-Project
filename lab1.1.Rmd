@@ -1,0 +1,103 @@
+---
+title: 'Laboratorio 1.1: Exploración y Visualización de Datos'
+author: "NOMBRE INTEGRANTES *************************** IMPORTANTE *************************"
+date: "Primavera 2018"
+output:
+  html_document:
+    theme: default
+    toc: no
+  pdf_document:
+    toc: no
+---
+
+
+# Instrucciones
+
+1. El formato de entrega es un documento en **HTML** generado por MarkDown. Asegúrese que están los nombres de los integrantes en la etiqueta `author`.
+
+2. Sólo uno de los integrantes debe subir este archivo a U-Cursos antes de finalizar la sesión. 
+
+3. Si no alcanza a terminar el laborario en la sesión, suba a U-Cursos lo que tenga hasta ese momento. De igual manera se abrirá una segunda entrega. 
+
+
+
+# Parte 1
+Cargue el dataset de tipos de accidentes.
+
+```{r}
+tipos <- read.table("https://users.dcc.uchile.cl/~jherrera/mineria/datasets/accidentes_2010_2011.txt")
+```
+
+Empléelo para responder las siguientes preguntas.
+
+1. ¿Cuáles son las dimensiones del dataset (filas, columnas)? Adjunte código. 
+```{r}
+# RESPUESTA
+
+```
+
+2. ¿Qué describe cada línea del dataset? (ejemplifique tomando el dato de la fila 34).
+
+3. Describa el tipo de dato de los valores de la columna TipoAccidente. 
+
+4. Muestre sólo los datos de la comuna de FRESIA en el año 2010 y 2011. Adjunte código. _Hint: Considere sección 3 y 4 del tutorial. _
+
+5. ¿Cuántos atropellos hubo en la localidad de **COCHRANE** en el 2010 y 2011. Adjunte código. _Hint: Considere sección 2, 3 y 4 del tutorial. _
+
+
+6. Filtre las Comunas del año 2011. Genere un boxplot que muestre tipo de accidente y cantidad. ¿Es posible ver outliers? ¿Cómo los identificó? _Hint: Considere sección 6 del tutorial. _
+
+
+# Parte 2
+Para esta segunda parte cargue el dataset de afectados de la siguiente manera:
+
+```{r}
+afectados <- read.table("https://users.dcc.uchile.cl/~jherrera/mineria/datasets/afectados_2010_2011.txt")
+```
+
+Empléelo para responder las siguientes preguntas.
+
+1. De acuerdo al siguiente gráfico, explique qué es lo que muestra y qué se puede concluir. 
+
+```{r, fig.height=12, fig.width=12, echo = F}
+library(ggplot2)
+ggplot(afectados[afectados$Muestra == "Regional", ],
+       aes(x=Descripcion, y=Cantidad)) +
+  facet_grid(Estado~Anio) +
+  coord_flip() +
+  geom_bar(stat="identity") + xlab("Comuna") + ylab("Cantidad")   
+  #theme(aspect.ratio = 0.5)
+```
+
+
+2. ¿Sería correcto comparar la cantidad de heridos leves de la `Región Metropolitana` con la `Región de los Lagos`? Explique qué haría al respecto.
+
+
+
+# Parte 3
+Para las siguiente preguntas, incluiremos otro dataset para hacer el análisis ahora considerando la población de cada comuna. Cargue el siguiente dataset de la población de Chile según datos del Censo 2002:
+
+```{r}
+poblacion <- read.table("https://users.dcc.uchile.cl/~jherrera/mineria/datasets/demografico.txt", header=T)
+muertosPorComuna <- with(afectados, afectados[Muestra == "Comunal" & Estado == "Muertos" & Anio == 2011, ])
+tiposPorComuna <- with(tipos, tipos[Muestra == "Comunal" & Anio == 2011, ])
+accidentesPorComuna <- aggregate(Cantidad ~ Descripcion, tiposPorComuna, FUN=sum)
+```
+
+Responda las siguientes preguntas:
+
+1. Explique qué datos muestran las variables `muertosPorComuna`, `tiposPorComuna` y `accidentesPorComuna`.
+
+2. Haga el cruce entre los datasets de población y afectados para obtener el nombre de la comuna, total de fallecidos y la población. Use `merge`. _Hint: Considere sección 7 del tutorial. _
+
+3. Una forma de estimar los muertos por accidente y por cada 10 mil habitantes es mediante la fórmula:
+
+Ordene los datasets por `muertosPorComuna` y `accidentes` por el nombre de la comuna (Descripcion). Use ```order```. 
+Cree un nuevo data frame que considere las columnas `muertoPorComuna`, `accidentes` y `muertePorAccidente`. Adjunte código. 
+_Hint: Considere sección 1 y 5 del tutorial. _
+
+
+4. Según los resultados obtenidos, y si no quiere morir en un accidente, ¿a qué comuna no iría en sus vacaciones? Adjunte un gráfico usando `ggplot` con las top-10 comunas que no iría por ningún motivo, ordenadas de la más a menos peligrosa.
+_Hint: para ordernar los datos en el gráfico use `aes(x=reorder(Descripcion, muertesPorAccidente), y=muertesPorAccidente))`. _
+
+

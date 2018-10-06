@@ -15,7 +15,7 @@ for (year in 2001:2017){
   print(paste("Para el año:", year, "...",sep=" "))
   egresos = paste("egr", year, sep="")
   temp = diagF(get(egresos), codDiag, quin) #temporal
-  file = paste("datasets/Quintero_anual/quin",year,".scv", sep="_")
+  file = paste("datasets/Quintero_anual/quin",year,".csv", sep="_")
   write.csv(temp, file=file)
   print(paste("Data set generado en ", file, sep=""))
   if (loop){
@@ -29,8 +29,8 @@ for (year in 2001:2017){
   loop = T
 }
 print("Dataset de todo Quintero")
-write.csv(listaTocomple, file = "datasets/Comunal/quintero.scv")
-print("Data set generado en datasets/Comunal/quintero.scv")
+write.csv(listaTocomple, file = "datasets/Comunal/quintero.csv")
+print("Data set generado en datasets/Comunal/quintero.csv")
 
 # Para Puchuncavi
 print("Generando datasets de Puchuncavi:")
@@ -39,7 +39,7 @@ for (year in 2001:2017){
   print(paste("Para el año:", year, "...",sep=" "))
   egresos = paste("egr", year, sep="")
   temp = diagF(get(egresos), codDiag, puch) #temporal
-  file = paste("datasets/Puchuncavi_anual/puch",year,".scv", sep="_")
+  file = paste("datasets/Puchuncavi_anual/puch",year,".csv", sep="_")
   write.csv(temp, file=file)
   print(paste("Data set generado en ", file, sep=""))
   if (loop){
@@ -53,13 +53,13 @@ for (year in 2001:2017){
   loop = T
 }
 print("Dataset de todo Puchuncavi")
-write.csv(listaTocomple, file = "datasets/Comunal/puchuncavi.scv")
-print("Data set generado en datasets/Comunal/quintero.scv")
+write.csv(listaTocomple, file = "datasets/Comunal/puchuncavi.csv")
+print("Data set generado en datasets/Comunal/quintero.csv")
 
 listaTocomple$comuna <- "Quintero"
 listaTocomple2$comuna <- "Puchuncavi"
 listaFinal = rbind(listaTocomple, listaTocomple2)
 
 print("Dataset Quintero/Puchuncavi")
-write.csv(listaFinal, file = "datasets/Comunal/quin_puch.scv")
-print("Data set generado en datasets/Comunal/quin_puch.scv")
+write.csv(listaFinal, file = "datasets/Comunal/quin_puch.csv")
+print("Data set generado en datasets/Comunal/quin_puch.csv")

@@ -5,6 +5,7 @@ library("foreign")
 # Importar codigos diagnóstico
 print("Importando codigos de diagnostico")
 codDiag <- read.csv("datasets/CSV_CIE10.csv",header=TRUE,sep=",")
+codDiag <- data.frame("id10"=codDiag$id10, "dec10"=codDiag$dec10)
 
 # Importar ingresos
 print("Importando datasets de ingresos")

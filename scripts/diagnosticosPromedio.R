@@ -5,6 +5,7 @@ QUINTERO <- 5107
 PUCHUNCAVI <- 5105
 
 egr <- read.csv("datasets\\egr2001_2017.csv")
+egr[is.na(egr)] <- 0
 
 egr$Nprom <- 0
 
@@ -53,5 +54,11 @@ enPuchuncavi$Rel <- enPuchuncavi$Rel/enPuchuncavi$RelN
 ggplot(enQuintero[order(enQuintero$Rel, decreasing = T),][1:30,], aes(x=reorder(Diag, Rel), y=Rel)) + 
   geom_bar(stat="identity") + 
   coord_flip() +
-  ggtitle("Porcentajes relativos de diagnósticos, Quintero promedio 2002 a 2017") + 
-  xlab("Diagnóstico") + ylab("Porcentaje relativo sobre promedio nacional")
+  ggtitle("Porcentajes relativos de diagn?sticos, Quintero promedio 2002 a 2017") + 
+  xlab("Diagn?stico") + ylab("Porcentaje relativo sobre promedio nacional")
+
+ggplot(enPuchuncavi[order(enPuchuncavi$Rel, decreasing = T),][1:30,], aes(x=reorder(Diag, Rel), y=Rel)) + 
+  geom_bar(stat="identity") + 
+  coord_flip() +
+  ggtitle("Porcentajes relativos de diagn?sticos, Puchuncavi promedio 2002 a 2017") + 
+  xlab("Diagn?stico") + ylab("Porcentaje relativo sobre promedio nacional")

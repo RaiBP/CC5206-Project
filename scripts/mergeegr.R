@@ -6,6 +6,6 @@ for (year in 2002:2017){
   temp <- read.csv(file,header=T)
   anio <- paste("N",year,sep = "")
   temp <- temp[,c("id10","COMUNA","dec10",anio)]
-  allegr <- merge(allegr,temp,by=c("id10","COMUNA","dec10"))
+  allegr <- merge(allegr,temp,by=c("id10","COMUNA","dec10"),all=T)
 }
 write.csv(allegr, file = "datasets\\egr2001_2017.csv")

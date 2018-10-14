@@ -1,5 +1,8 @@
 ---
-title: "Crisis medioambiental en Quintero y Puchuncaví: Análisis de egresos hospitalarios período 2001-2017 *(sujeto a cambios)*"
+title: "Crisis medioambiental en Quintero y Puchuncaví: Análisis de egresos hospitalarios período 2002-2017 *(sujeto a cambios)*"
+header-includes:
+  - \usepackage{amsmath}
+    - \usepackage{mathtools}
 output: html_document
 ---
 
@@ -15,13 +18,57 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Resultados
 
+### Preliminares
+
+Sea $\mathcal{A}=\{2002,...,2017\}$ el conjunto de los años en estudio, $\mathcal{C}$ el conjunto de las 346 comunas de Chile y $\mathcal{D}$ el conjunto de los posibles diagnósticos dados por el CIE-10. Para $a \in \mathcal{A}$, $d \in \mathcal{D}$ y $c \in \mathcal{C}$, se define la incidencia del diagnóstico $d$ en la comuna $c$ en el año $a$,  $I(a,d,c)$, como: 
+
+$$I(a,d,c)=\frac{N(a,d,c)}{P(a,c)}$$
+
+Donde $N(a,d,c)$ es el número de egresos en el año $a$ de pacientes provenientes de $c$ con el diagnóstico $d$ y $P(a,c)$ es la población total de $c$ en el año $a$. Usando los datos del Censo 2017, se definirá el la función $\xi$ como:
+    
+$$
+  \begin{align*}
+      \xi \text{: } &\mathcal{C} \to \mathbb{R}^{162}\\
+       &c \mapsto \xi(c) = (\xi_0(c),...,\xi_{161}(c))
+\end{align*}
+$$
+Donde $\xi_i$ está dado por:
+
+$$
+  \begin{align*}
+     \xi_i(c)= \begin{cases}
+    \#\text{hombres de edad }i\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=0,...,80\\
+    \#\text{mujeres de edad }i-81\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=81,...,161
+    \end{cases}
+\end{align*}
+$$
+
+Denotando $\mathcal{C}\setminus\{c\}\equiv\mathcal{C}_0$, se definirá la comuna más cercana demográficamente a $c$ como la comuna $c_0 \in \mathcal{C}_0$ tal que:
+
+$$
+c_0=\arg \min_{h \in \mathcal{C}_0} \left\lVert \xi(c)-\xi(h) \right\rVert ^2
+$$
+También se definirá el riesgo relativo del diagnóstico $d$, de la comuna $c$, en el año $a$, $\text{RR}(d,c,a)$, como:
+
+[//]: # (este parámetro va sí o sí, es muy usado en epidemiología)
+
+$$
+\text{RR}(d,c,a)=\frac{I(a,d,c)}{I(a,d,c_{0})}
+$$
+
+Por último, se definirá el riesgo relativo nacional del diagnóstico $d$, de la comuna $c$, en el año $a$, $\text{RR}_{N}(d,c,a)$, como:
+
+[//]: # (este parámetro es opcional, porque es un invento nuestro (no sé si tendrá algun sustento estadístico usarlo))
+
+$$
+\text{RR}_{N}(d,c,a)=\frac{I(a,d,c)}{I_{N}(a,d,c)}
+$$
+Donde: 
+$$I_{N}(a,d,c) = \frac{\sum\limits_{h \in \mathcal{C}_0} I(a,d,h)}{|\mathcal{C}_0|}$$
+
+
+Si se denota la comuna de Quintero como $q \in \mathcal{C}$ y la de Puchuncaví como $p \in \mathcal{C}$, se puede definir entonces la comuna más cercana demográficamente con respecto a $q$, $q_{0} \in \mathcal{C}\setminus\{q,p\}$, y la comuna más cercana demográficamente con respecto a $p$, $p_{0} \in \mathcal{C}\setminus\{q,p\}$. 
+
 ## Conclusión
 
-<<<<<<< HEAD
 ## Referencias
-=======
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-Estoy probando si puedo pushear
-Otro test
->>>>>>> 7b32577cea0c77b55499eba5c6f6640f3f87cce4

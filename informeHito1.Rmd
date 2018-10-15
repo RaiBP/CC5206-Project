@@ -28,7 +28,7 @@ Donde $N(a,d,c)$ es el número de egresos en el año $a$ de pacientes provenient
     
 $$
   \begin{align*}
-      \xi \text{: } &\mathcal{C} \to \mathbb{R}^{162}\\
+      \xi \text{: } &\mathcal{C} \to \mathbb{R}^{161}\\
        &c \mapsto \xi(c) = (\xi_0(c),...,\xi_{161}(c))
 \end{align*}
 $$

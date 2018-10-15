@@ -24,6 +24,9 @@ Para este trabajo se utilizan los datos de egresos hospitalarios desde el año 2
 
 ## Resultados
 
+```{r}
+
+```
 
 
 ### Preliminares

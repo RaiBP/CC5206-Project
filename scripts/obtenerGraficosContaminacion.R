@@ -1,3 +1,7 @@
+#### PRIMERO CORRER obtenerContaminacion.R ######
+
+source("scripts\\obtenerContaminacion.R")
+
 QSO2 <- read.csv("datasets\\contaminacion\\QSO2.csv", header=TRUE)
 QMP10 <-  read.csv("datasets\\contaminacion\\QMP10.csv", header=TRUE)
 PSO2 <- read.csv("datasets\\contaminacion\\PSO2.csv", header=TRUE)

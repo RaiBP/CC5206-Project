@@ -242,4 +242,6 @@ PMP10$std <- rowSds(as.matrix(PMP10[, 2:5]), na.rm=TRUE)
 
 ggplot(data=PMP10, aes(x=Fecha, y=mean, group=1))+
   geom_line(linetype = "dashed")+
-  geom_point()
+  geom_point()+
+  ggtitle("Concentración de SO2 en el aire de Quinteros y Puchuncaví") + 
+  xlab("Año") + ylab("Concentración de SO2 en atmósfera (ppb)")

@@ -46,7 +46,7 @@ $$
 Denotando $\mathcal{C}\setminus\{c\}\equiv\mathcal{C}_0$, se definirá la comuna más cercana demográficamente a $c$ como la comuna $c_0 \in \mathcal{C}_0$ tal que:
 
 $$
-c_0=\arg \min_{h \in \mathcal{C}_0} \left\lVert \xi(c)-\xi(h) \right\rVert ^2
+c_0=\arg \min_{h \in \mathcal{C}_0} \left\lVert \xi(c)-\xi(h) \right\rVert 
 $$
 También se definirá el riesgo relativo del diagnóstico $d$, de la comuna $c$, en el año $a$, $\text{RR}(d,c,a)$, como:
 
@@ -65,7 +65,7 @@ $$
 $$
 Donde: 
 $$I_{N}(a,d,c) = \frac{\sum\limits_{h \in \mathcal{C}_0} I(a,d,h)}{|\mathcal{C}_0|}$$
-
+$$I_{N}(a,d,c) = \frac{\sum\limits_{h \in \mathcal{C}_0} N(a,d,h)}{\sum\limits_{h \in \mathcal{C}_0} P(a,h)}$$
 
 Si se denota la comuna de Quintero como $q \in \mathcal{C}$ y la de Puchuncaví como $p \in \mathcal{C}$, se puede definir entonces la comuna más cercana demográficamente con respecto a $q$, $q_{0} \in \mathcal{C}\setminus\{q,p\}$, y la comuna más cercana demográficamente con respecto a $p$, $p_{0} \in \mathcal{C}\setminus\{q,p\}$. 
 

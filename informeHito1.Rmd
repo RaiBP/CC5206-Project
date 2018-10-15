@@ -12,11 +12,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introducción
 
+Con el fin de mostrar de manera más explícita el problema al que se enfrenta la comuna de Quintero y Puchuncaví, junto con analizar los problemas que pueden venir a futuro, se utilizan herramientas de minería de datos para comparar distintos aspectos de la comuna con respecto a otras comunas y a nivel país.
+
 ## Contextualización del problema
+
+Recientemente se ha descubierto que los niveles de contaminación en las comunas de Quintero y Puchuncaví alcanzaron niveles críticos debido a malas regulaciones de industrias en la zona, esto ha provocado el aumento de distintas enfermedades y es probable que siga aumentando.
 
 ## Datos a utilizar
 
+Para este trabajo se utilizan los datos de egresos hospitalarios desde el año 2002 al año 2017, también se trabaja con el censo desde el 2002 al 2020 (los años que no ha habido censo se usa el dato estimado brindado por el dataset).
+
 ## Resultados
+
+
 
 ### Preliminares
 

@@ -16,10 +16,10 @@ PSO2ventanas<- read.csv("datasets\\contaminacion\\puch\\ventanasSO2.csv", header
 PMP10ventanas<- read.csv("datasets\\contaminacion\\puch\\ventanasMP10.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
 
 
-
+library(ggplot2)
 ################### QUINTERO SO2 ########################################
 
-data0 <- QSO2estacionsur[c(1,3:5)]
+data0 <- QSO2estacionsur[,c(1,3:5)]
 colnames(data0) <- c("Fecha","Validado","Preliminar","NoValidado")
 data0$estacionSur <- rowMeans(data0[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
 
@@ -29,7 +29,7 @@ for (i in 1:length(data0$Fecha)){
 
 data0 <- data0[,c(1,5)]
 
-data1 <- QSO2loncura[c(1,3:5)]
+data1 <- QSO2loncura[,c(1,3:5)]
 colnames(data1) <- c("Fecha","Validado","Preliminar","NoValidado")
 
 data1$loncura <- rowMeans(data1[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
@@ -40,7 +40,7 @@ for (i in 1:length(data1$Fecha)){
 
 data1 <- data1[,c(1,5)]
 
-data2 <- QSO2villaalegre[c(1,3:5)]
+data2 <- QSO2villaalegre[,c(1,3:5)]
 colnames(data2) <- c("Fecha","Validado","Preliminar","NoValidado")
 
 data2$villaAlegre <- rowMeans(data2[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
@@ -51,7 +51,7 @@ for (i in 1:length(data2$Fecha)){
 
 data2 <- data2[,c(1,5)]
 
-data3 <- QSO2centro[c(1,3:5)]
+data3 <- QSO2centro[,c(1,3:5)]
 colnames(data3) <- c("Fecha","Validado","Preliminar","NoValidado")
 
 data3$centro <- rowMeans(data3[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
@@ -80,7 +80,7 @@ ggplot(data=QSO2, aes(x=Fecha, y=mean, group=1))+
 
 ################### QUINTERO MP10 ########################################
 
-data0 <- QMP10estacionsur[c(1,3:5)]
+data0 <- QMP10estacionsur[,c(1,3:5)]
 colnames(data0) <- c("Fecha","Validado","Preliminar","NoValidado")
 data0$estacionSur <- rowMeans(data0[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
 
@@ -90,7 +90,7 @@ for (i in 1:length(data0$Fecha)){
 
 data0 <- data0[,c(1,5)]
 
-data1 <- QMP10loncura[c(1,3:5)]
+data1 <- QMP10loncura[,c(1,3:5)]
 colnames(data1) <- c("Fecha","Validado","Preliminar","NoValidado")
 
 data1$loncura <- rowMeans(data1[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
@@ -101,7 +101,7 @@ for (i in 1:length(data1$Fecha)){
 
 data1 <- data1[,c(1,5)]
 
-data2 <- QMP10villaalegre[c(1,3:5)]
+data2 <- QMP10villaalegre[,c(1,3:5)]
 colnames(data2) <- c("Fecha","Validado","Preliminar","NoValidado")
 
 data2$villaAlegre <- rowMeans(data2[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
@@ -128,7 +128,7 @@ ggplot(data=QMP10, aes(x=Fecha, y=mean, group=1)) +
 
 ################### PUCHUNCAVÍ SO2 ########################################
 
-data0 <- PSO2estacionpuch[c(1,3:5)]
+data0 <- PSO2estacionpuch[,c(1,3:5)]
 colnames(data0) <- c("Fecha","Validado","Preliminar","NoValidado")
 data0$estacionPuch <- rowMeans(data0[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
 
@@ -138,7 +138,7 @@ for (i in 1:length(data0$Fecha)){
 
 data0 <- data0[,c(1,5)]
 
-data1 <- PSO2lagreda[c(1,3:5)]
+data1 <- PSO2lagreda[,c(1,3:5)]
 colnames(data1) <- c("Fecha","Validado","Preliminar","NoValidado")
 
 data1$lagreda <- rowMeans(data1[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)

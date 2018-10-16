@@ -74,30 +74,31 @@ for (d in diagnosticos){
   }
 }
 
-
+library(reshape)
 
 
 
 # write.csv(incidencia, file = "datasets\\RRmejorado.csv")
 
-incidencia <- read.csv("datasets\\RRmejorado.csv", header=TRUE)
+incidencia <- read.csv("datasets\\RRnacionalFinal.csv", header=TRUE)
 is.na(incidencia) <- sapply(incidencia,is.infinite)
+# 
+# meanP <- rowMeans(incidencia[,seq(2,32,2)],na.rm=TRUE)
+# meanQ <- rowMeans(incidencia[,seq(3,33,2)],na.rm=TRUE)
+# incidencia <- data.frame(incidencia,meanQ)
+# incidencia <- data.frame(incidencia,meanP)
+# 
+# 
+# codDiag <- read.csv("datasets\\codigosDiagnosticos.csv",header=TRUE)
+# codDiag <- codDiag[,2:3]
+# incidencia <- merge(incidencia, codDiag, by="id10")
+# mean <- rowMeans(incidencia[,c("meanQ","meanP")])
+# incidencia <- data.frame(incidencia,mean)
+# colnames(incidencia)[37] <- "mean"
 
-meanP <- rowMeans(incidencia[,seq(2,32,2)],na.rm=TRUE)
-meanQ <- rowMeans(incidencia[,seq(3,33,2)],na.rm=TRUE)
-incidencia <- data.frame(incidencia,meanQ)
-incidencia <- data.frame(incidencia,meanP)
+diagInteres <- intersect(incidencia[order(incidencia$meanQ, decreasing = T),][1:300,"id10"],incidencia[order(incidencia$meanP, decreasing = T),][1:300,"id10"])
 
-
-codDiag <- read.csv("datasets\\codigosDiagnosticos.csv",header=TRUE)
-codDiag <- codDiag[,2:3]
-incidencia <- merge(incidencia, codDiag, by="id10")
-mean <- rowMeans(incidencia[,c("meanQ","meanP")])
-incidencia <- data.frame(incidencia,mean)
-colnames(incidencia)[37] <- "mean"
-
-diagInteres <- intersect(incidencia[order(incidencia$meanQ, decreasing = T),][1:300,],incidencia[order(incidencia$meanP, decreasing = T),][1:300,])
-
+incidenciaInt <- incidencia[incidencia$id10 %in% diagInteres,]
 
 ggplot(incidencia[order(incidencia$meanQ, decreasing = T),][1:30,], aes(x=reorder(dec10, meanQ), y=meanQ)) + 
   geom_bar(stat="identity") + 
@@ -112,7 +113,7 @@ ggplot(incidencia[order(incidencia$meanP, decreasing = T),][1:30,], aes(x=reorde
   ggtitle("Diagnósticos con mayor riesgo relativo nacional en Puchuncaví") + 
   xlab("Diagnóstico") + ylab("Riesgo relativo c/r a incidencia nacional, promediado de 2002 a 2017")
 
-ggplot(melt(diagInteres[,c("meanQ","meanP","dec10","mean")], id.vars=c("mean","dec10")), aes(x=reorder(dec10, mean), y=value)) +   
+ggplot(melt(incidenciaInt[,c("meanQ","meanP","dec10","mean")], id.vars=c("mean","dec10")), aes(x=reorder(dec10, mean), y=value)) +   
   geom_bar(aes(fill = variable), position = "dodge", stat="identity") +
   coord_flip() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +

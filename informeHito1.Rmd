@@ -24,9 +24,23 @@ Para este trabajo se utilizan los datos de egresos hospitalarios desde el año 2
 
 ## Resultados
 
-```{r}
+Como resultado parcial del análisis de los datos obtuvimos lo siguiente:
 
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('plots\\quin_prom.png')
 ```
+Este gráfico muestra las enfermedades de mayor incidencia en Quintero, donde el mayor riesgo es presentado con la supervisión del embarazo, seguido por infecciones mientras dura el embarazo y la diabetes.
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('plots\\puch_prom.png')
+```
+En este otro gráfico se muestra, al igual que el anterior, las enfermedades de mayor incidencia, pero en este caso en Puchuncavi.
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('plots\\SindromeNefriticoQSO2.png')
+```
+En el gráfico de arriba se observa una especie de efecto retardado sobre la incidencia de Síndrome Nefrítico en Quintero y Puchuncavi
+
 
 
 ### Preliminares

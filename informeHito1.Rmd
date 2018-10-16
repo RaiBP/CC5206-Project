@@ -37,14 +37,20 @@ knitr::include_graphics('plots\\puch_prom.png')
 En este otro gráfico se muestra, al igual que el anterior, las enfermedades de mayor incidencia, pero en este caso en Puchuncavi.
 
 ```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('plots\\SindromeNefriticoQSO2.png')
-```
-En el gráfico de arriba se observa una especie de efecto retardado sobre la incidencia de Síndrome Nefrítico en Quintero y Puchuncavi
-
-```{r echo=FALSE, out.width='100%'}
 knitr::include_graphics('plots\\O030SO2Q.png')
 ```
-En este gráfico se pueden ver los egresos por abortos espontáneos 
+En el gráfico anterior se observa una diferencia notable en los casos de aborto espontáneo por infección genital y pelviana entre Quintero y Pucón, que es la comuna más cercana demograficamente hablando (diferencia de solo 28 habitantes segun el censo de 2017). Además se observa que la concentración de SO2 en el aire de Quintero y la incidencia de aborto se comportan de manera similar, siendo esta última curva muy parecida a la de concentración pero desplazada, por lo que se presume una correlación. 
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('plots\\quintpucsindrome.png')
+```
+En este gráfico se puede ver que los caos de síndrome nefrítico en Quintero y Pucón se comportan de manera distinta, pero estudios indican que la incidencia en condiciones normales debería ser similar en toda la nación, por lo que también se presume factores de contaminación por este gráfico.
+
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('plots\\incidenciaycontQ.png')
+```
+En el gráfico anterior se logra ver una similitud entre el aumento de la concentración de SO2 en Quintero y la incidencia de síndrome nefrítico de Quintero, alcanzando peaks en los años que la contaminación los alcanza también.
+
 
 ### Preliminares
 

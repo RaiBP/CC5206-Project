@@ -41,7 +41,10 @@ knitr::include_graphics('plots\\SindromeNefriticoQSO2.png')
 ```
 En el gráfico de arriba se observa una especie de efecto retardado sobre la incidencia de Síndrome Nefrítico en Quintero y Puchuncavi
 
-
+```{r echo=FALSE, out.width='100%'}
+knitr::include_graphics('plots\\O030SO2Q.png')
+```
+En este gráfico se pueden ver los egresos por abortos espontáneos 
 
 ### Preliminares
 

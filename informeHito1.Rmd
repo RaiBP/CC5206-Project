@@ -1,9 +1,9 @@
 ---
 title: "Crisis medioambiental en Quintero y Puchuncaví: Análisis de egresos hospitalarios período 2002-2017 *(sujeto a cambios)*"
+output: html_document
 header-includes:
   - \usepackage{amsmath}
-    - \usepackage{mathtools}
-output: html_document
+  - \usepackage{mathtools}
 ---
 
 ```{r setup, include=FALSE}
@@ -20,9 +20,9 @@ Recientemente se ha descubierto que los niveles de contaminación en las comunas
 
 ## Datos a utilizar
 
-Para este trabajo se utilizan los datos de egresos hospitalarios desde el año 2002 al año 2017, también se trabaja con el censo desde el 2002 al 2020 (los años que no ha habido censo se usa el dato estimado brindado por el dataset).
+Para el presente análisis se utilizan los datos de egresos hospitalarios desde el año 2002 al año 2017 dados por el Departamento de Estadísticas e Información de Salud (2017), los cuales dan cuenta de el establecimiento, la comuna, la región, el diagóstico del egreso, entre otros atributos. Se trabajará también con los datos de la proyección de población entre 2002 al 2020 dado por el Instituto Nacional de Estadísticas (2014), separados por comuna y sexo. Por último, se utilizan los datos del Sistema de Información Nacional de Calidad del Aire (2018), específicamente los índices de concentración de dióxido de azufre (SO2) y material particulado respirable con diámetro menor o igual a 10 $\mu$m (MP10) registrados anualmente en estaciones de monitoreo en las comunas de Quintero y Puchuncaví, entre 1993 y 2018.
 
-## Resultados
+## Análisis exploratorio de los datos
 
 ```{r}
 
@@ -31,55 +31,54 @@ Para este trabajo se utilizan los datos de egresos hospitalarios desde el año 2
 
 ### Preliminares
 
-Sea $\mathcal{A}=\{2002,...,2017\}$ el conjunto de los años en estudio, $\mathcal{C}$ el conjunto de las 346 comunas de Chile y $\mathcal{D}$ el conjunto de los posibles diagnósticos dados por el CIE-10. Para $a \in \mathcal{A}$, $d \in \mathcal{D}$ y $c \in \mathcal{C}$, se define la incidencia del diagnóstico $d$ en la comuna $c$ en el año $a$,  $I(a,d,c)$, como: 
+Para analizar los datos se utilizarán conceptos prestados de la epidemiología, disciplina que se encarga de estudiar la distribución de las enfermedades en la población y los factores que influyen en tal distribución. Primero se definirá la  **tasa de incidencia** o simplemente incidencia de una enfermedad como "el número de casos nuevos que ocurren en un período de tiempo específico en una población en riesgo de contraer la enfermedad" (Gordis, 2014, p. 41). 
 
-$$I(a,d,c)=\frac{N(a,d,c)}{P(a,c)}$$
+Si bien los egresos hospitalarios no dan cuenta completamente de los nuevos casos de una enfermedad, pues los casos de gente hospitalizada por una enfermedad tiende a ser mucho menor que los casos de gente con la enfermedad en sí, como el objetivo de este estudio no es realizar un estudio epidemiológico riguroso, se considerará el número de egresos hospitalarios en un año para una enfermedad dada como "el número de casos nuevos en un período de tiempo específico" (siendo el período de tiempo específico un año) y por lo tanto, en cuanto a este análisis concierne, podrán serán usados para calcular la incidencia de la enfermedad.
 
-Donde $N(a,d,c)$ es el número de egresos en el año $a$ de pacientes provenientes de $c$ con el diagnóstico $d$ y $P(a,c)$ es la población total de $c$ en el año $a$. Usando los datos del Censo 2017, se definirá el la función $\xi$ como:
-    
-$$
-  \begin{align*}
-      \xi \text{: } &\mathcal{C} \to \mathbb{R}^{161}\\
-       &c \mapsto \xi(c) = (\xi_0(c),...,\xi_{161}(c))
-\end{align*}
-$$
-Donde $\xi_i$ está dado por:
+Con el objetivo de aplicar el concepto al estudio en cuestión, se define $\mathcal{A}=\{2002,...,2017\}$ como el conjunto de los años en estudio y $\mathcal{D}$ el conjunto de los posibles diagnósticos dados por el CIE-10, se tiene entonces que para $a \in \mathcal{A}$ y $d \in \mathcal{D}$, se define la tasa de incidencia del diagnóstico $d$, en el año $a$ y para una población cualquiera $\mathcal{X}$,  $\text{I}_{(a,d)}(\mathcal{X})$, como: 
 
-$$
-  \begin{align*}
-     \xi_i(c)= \begin{cases}
-    \#\text{hombres de edad }i\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=0,...,80\\
-    \#\text{mujeres de edad }i-81\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=81,...,161
-    \end{cases}
-\end{align*}
-$$
+$$\text{I}_{(a,d)}(\mathcal{X})=\frac{\text{N}_{(a,d)}(\mathcal{X})}{\text{P}_{a}(\mathcal{X})}$$
 
-Denotando $\mathcal{C}\setminus\{c\}\equiv\mathcal{C}_0$, se definirá la comuna más cercana demográficamente a $c$ como la comuna $c_0 \in \mathcal{C}_0$ tal que:
+<!-- Donde $N_{a,d}(\mathcal{X})$ es el número de egresos en el año $a$ de pacientes provenientes de $\mathcal{X}$ con el diagnóstico $d$ y $P_{a}(\mathcal{X})$ es la cantidad de personas en $\mathcal{X}$ en el año $a$. Usando los datos del Censo 2017, se definirá la función $\xi$ como: -->
 
-$$
-c_0=\arg \min_{h \in \mathcal{C}_0} \left\lVert \xi(c)-\xi(h) \right\rVert 
-$$
-También se definirá el riesgo relativo del diagnóstico $d$, de la comuna $c$, en el año $a$, $\text{RR}(d,c,a)$, como:
+<!-- $$ -->
+<!--   \begin{align*} -->
+<!--       \xi \text{: } &\mathcal{C} \to \mathbb{R}^{161}\\ -->
+<!--        &c \mapsto \xi(c) = (\xi_0(c),...,\xi_{161}(c)) -->
+<!-- \end{align*} -->
+<!-- $$ -->
+<!-- Donde $\xi_i$ está dado por: -->
 
-[//]: # (este parámetro va sí o sí, es muy usado en epidemiología)
+<!-- $$ -->
+<!--   \begin{align*} -->
+<!--      \xi_i(c)= \begin{cases} -->
+<!--     \#\text{hombres de edad }i\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=0,...,80\\ -->
+<!--     \#\text{mujeres de edad }i-81\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=81,...,161 -->
+<!--     \end{cases} -->
+<!-- \end{align*} -->
+<!-- $$ -->
 
-$$
-\text{RR}(d,c,a)=\frac{I(a,d,c)}{I(a,d,c_{0})}
-$$
+<!-- Denotando $\mathcal{C}\setminus\{c\}\equiv\mathcal{C}_0$, se definirá la comuna más cercana demográficamente a $c$ como la comuna $c_0 \in \mathcal{C}_0$ tal que: -->
 
-Por último, se definirá el riesgo relativo nacional del diagnóstico $d$, de la comuna $c$, en el año $a$, $\text{RR}_{N}(d,c,a)$, como:
+<!-- $$ -->
+<!-- c_0=\arg \min_{h \in \mathcal{C}_0} \left\lVert \xi(c)-\xi(h) \right\rVert  -->
+<!-- $$ -->
 
-[//]: # (este parámetro es opcional, porque es un invento nuestro (no sé si tendrá algun sustento estadístico usarlo))
+Para estudiar qué tan fuerte es la asociación entre la exposición a cierto factor ambiental y el desarollo de una enfermedad, se seleccionan dos poblaciones, $\mathcal{X}$ y $\mathcal{X}_{0}$, donde la primera está expuesta a tal factor ambiental y la segunda no, y se define el **riesgo relativo** como el cociente entre la incidencia de la enfermedad en la primera población y la incidencia de la enfermedad en la segunda (Gordis, 2014, p. 218).  Por lo tanto, en el contexto del presente análisis, para un año $a$ y un diagnóstico $d$, se definirá el riesgo relativo $\text{RR}_{(a,d)}(\mathcal{X},\mathcal{X}_{0})$ entre la población expuesta, $\mathcal{X}$, y la no expuesta, $\mathcal{X}_{0}$ como:
 
 $$
-\text{RR}_{N}(d,c,a)=\frac{I(a,d,c)}{I_{N}(a,d,c)}
+\text{RR}_{(a,d)}(\mathcal{X},\mathcal{X}_{0})=\frac{\text{I}_{(a,d)}(\mathcal{X})}{\text{I}_{(a,d)}(\mathcal{X}_{0})}
 $$
-Donde: 
-$$I_{N}(a,d,c) = \frac{\sum\limits_{h \in \mathcal{C}_0} I(a,d,h)}{|\mathcal{C}_0|}$$
-$$I_{N}(a,d,c) = \frac{\sum\limits_{h \in \mathcal{C}_0} N(a,d,h)}{\sum\limits_{h \in \mathcal{C}_0} P(a,h)}$$
 
-Si se denota la comuna de Quintero como $q \in \mathcal{C}$ y la de Puchuncaví como $p \in \mathcal{C}$, se puede definir entonces la comuna más cercana demográficamente con respecto a $q$, $q_{0} \in \mathcal{C}\setminus\{q,p\}$, y la comuna más cercana demográficamente con respecto a $p$, $p_{0} \in \mathcal{C}\setminus\{q,p\}$. 
 
 ## Conclusión
 
 ## Referencias
+
+Gordis, L. (2014). *Epidemiology* (5ta ed.). Philadelphia, PA: Elsevier Saunders. 
+
+Ministerio de Salud, Departamento de Estadísticas e Información de Salud (DEIS) (2017). *Egresos Hospitalarios 2001-2017* [Dataset]. Gobierno de Chile. Recuperado de: https://reportesdeis.minsal.cl/Egresos2001_2016/egresos_2003/egresos.asp
+
+Instituto Nacional de Estadísticas (INE) (2014). *Proyección de población 2002 - 2020 (actualización 2014). Comunas: Población por sexo y edad simple* [Dataset]. Gobierno de Chile. Recuperado de: http://www.ine.cl/estadisticas/demograficas-y-vitales
+
+Ministerio del Medio Ambiente, Sistema de Informacion Nacional de Calidad del Aire (SINCA) (2018). *Registros de calidad del aire* [Dataset]. Gobierno de Chile. Recuperado de: https://sinca.mma.gob.cl/index.php/busqueda?cache=off&

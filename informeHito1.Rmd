@@ -12,9 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introducción
 
-Con el fin de mostrar de manera más explícita el problema al que se enfrenta la comuna de Quintero y Puchuncaví, junto con analizar los problemas que pueden venir a futuro, se utilizan herramientas de minería de datos para comparar distintos aspectos de las comunas con respecto a los datos a nivel país.
+Con el fin de mostrar de manera más explícita el problema al que se enfrenta la comuna de Quintero y Puchuncaví, junto con analizar los problemas que pueden venir a futuro, se utilizan herramientas de minería de datos para comparar distintos aspectos de las comunas con respecto a los datos a nivel país, inspirados por el paper Modeling to Predict Cases of Hantavirus Pulmonary Syndrome in Chile (Nsoesie, et al., 2014), que atribuye aumentos de temperatura al aumento del virus hanta, se espera encontrar una correlación entre la incidencia de enfermedades asociadas a contaminantes y la alta concentración de ciertos productos tóxicos en el aire de la zona.
 
-Se espera encontrar una correlación entre la incidencia de enfermedades asociadas a contaminantes y la alta concentración de ciertos productos tóxicos en el aire de la zona.
+Además se utilizarán indicadores epidemiológicos como el riesgo relativo para encontrar las enfermedades que más se escapan de la realidad nacional en Quintero y Puchuncaví.
 
 ## Contextualización del problema
 
@@ -217,6 +217,9 @@ Manosalva, J., & Obrador, P. (21 de Mayo de 2016). Vecinos de Quintero y Puchunc
 Ministerio del Medio Ambiente. (2018). Sistema de Informacion Nacional de Calidad del Aire (SINCA). Registros de calidad del aire [Dataset]. Recuperado el 16 de Octubre de 2018, de Ministerio del Medio Ambiente. Gobierno de Chile: https://sinca.mma.gob.cl/index.php/busqueda?cache=off&
 
 Minsal. (2017). Egresos Hospitalarios 2001-2017 [Dataset]. Recuperado el 16 de Octubre de 2018, de Ministerio de Salud, Departamento de Estadísticas e Información de Salud (DEIS) Gobierno de Chile: https://reportesdeis.minsal.cl/Egresos2001_2016/egresos_2003/egresos.asp
+
+Nsoesie EO, Mekaru SR, Ramakrishnan N, Marathe MV, Brownstein JS (2014) Modeling to Predict Cases of Hantavirus Pulmonary Syndrome in Chile. PLoS
+Negl Trop Dis 8(4): e2779. doi:10.1371/journal.pntd.0002779
 
 Núñez, M. J., & Olguín, A. (1 de Septiembre de 2018). Los dolores que aquejan a Quintero y Puchuncaví. Recuperado el 16 de Octubre de 2018, de La Tercera: https://www.latercera.com/reportajes/noticia/los-dolores-aquejan-quintero-puchuncavi/303300/
 

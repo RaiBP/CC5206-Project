@@ -20,7 +20,7 @@ Recientemente se ha descubierto que los niveles de contaminación en las comunas
 
 ## Datos a utilizar
 
-Para el presente análisis se utilizan los datos de egresos hospitalarios desde el año 2002 al año 2017 dados por el Departamento de Estadísticas e Información de Salud (2017), los cuales dan cuenta de el establecimiento, la comuna, la región, el diagóstico del egreso (según norma CIE-10), entre otros atributos. Se trabajará también con los datos de la proyección de población entre 2002 al 2020 dado por el Instituto Nacional de Estadísticas (2014), separados por comuna y sexo. Por último, se utilizan los datos del Sistema de Información Nacional de Calidad del Aire (2018), específicamente los índices de concentración de dióxido de azufre (SO2) y material particulado respirable con diámetro menor o igual a 10 $\mu$m (MP10) registrados anualmente en estaciones de monitoreo en las comunas de Quintero y Puchuncaví, entre 1993 y 2018.
+Para el presente análisis se utilizan los datos de egresos hospitalarios desde el año 2002 al año 2017 dados por el Departamento de Estadísticas e Información de Salud (2017), los cuales dan cuenta de el establecimiento, la comuna, la región, el diagóstico del egreso según la Clasificación Internacional de Enfermedades 10.ª edición (CIE-10), entre otros atributos. Se trabajará también con los datos de la proyección de población entre 2002 al 2020 dado por el Instituto Nacional de Estadísticas (2014), separados por comuna y sexo. Por último, se utilizan los datos del Sistema de Información Nacional de Calidad del Aire (2018), específicamente los índices de concentración de dióxido de azufre (SO2) y material particulado respirable con diámetro menor o igual a 10 $\mu$m (MP10) registrados anualmente en estaciones de monitoreo en las comunas de Quintero y Puchuncaví, entre 1993 y 2018.
 
 ## Análisis exploratorio de los datos
 
@@ -33,31 +33,6 @@ Si bien los egresos hospitalarios no dan cuenta completamente de los nuevos caso
 Con el objetivo de aplicar el concepto al estudio en cuestión, se define $\mathcal{A}=\{2002,...,2017\}$ como el conjunto de los años en estudio y $\mathcal{D}$ el conjunto de los posibles diagnósticos dados por el CIE-10, se tiene entonces que para $a \in \mathcal{A}$ y $d \in \mathcal{D}$, se define la tasa de incidencia del diagnóstico $d$, en el año $a$ y para una población cualquiera $\mathcal{X}$,  $\text{I}_{(a,d)}(\mathcal{X})$, como: 
 
 $$\text{I}_{(a,d)}(\mathcal{X})=\frac{\text{N}_{(a,d)}(\mathcal{X})}{\text{P}_{a}(\mathcal{X})}$$
-
-<!-- Donde $N_{a,d}(\mathcal{X})$ es el número de egresos en el año $a$ de pacientes provenientes de $\mathcal{X}$ con el diagnóstico $d$ y $P_{a}(\mathcal{X})$ es la cantidad de personas en $\mathcal{X}$ en el año $a$. Usando los datos del Censo 2017, se definirá la función $\xi$ como: -->
-
-<!-- $$ -->
-<!--   \begin{align*} -->
-<!--       \xi \text{: } &\mathcal{C} \to \mathbb{R}^{161}\\ -->
-<!--        &c \mapsto \xi(c) = (\xi_0(c),...,\xi_{161}(c)) -->
-<!-- \end{align*} -->
-<!-- $$ -->
-<!-- Donde $\xi_i$ está dado por: -->
-
-<!-- $$ -->
-<!--   \begin{align*} -->
-<!--      \xi_i(c)= \begin{cases} -->
-<!--     \#\text{hombres de edad }i\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=0,...,80\\ -->
-<!--     \#\text{mujeres de edad }i-81\text{ de la comuna }c\text{ en el año 2017}& \text{si } i=81,...,161 -->
-<!--     \end{cases} -->
-<!-- \end{align*} -->
-<!-- $$ -->
-
-<!-- Denotando $\mathcal{C}\setminus\{c\}\equiv\mathcal{C}_0$, se definirá la comuna más cercana demográficamente a $c$ como la comuna $c_0 \in \mathcal{C}_0$ tal que: -->
-
-<!-- $$ -->
-<!-- c_0=\arg \min_{h \in \mathcal{C}_0} \left\lVert \xi(c)-\xi(h) \right\rVert  -->
-<!-- $$ -->
 
 Para estudiar qué tan fuerte es la asociación entre la exposición a cierto factor ambiental y el desarollo de una enfermedad, se seleccionan dos poblaciones, $\mathcal{X}$ y $\mathcal{X}_{0}$, donde la primera está expuesta a tal factor ambiental y la segunda no, y se define el **riesgo relativo** como el cociente entre la incidencia de la enfermedad en la primera población y la incidencia de la enfermedad en la segunda (Gordis, 2014, p. 218).  Por lo tanto, en el contexto del presente análisis, para un año $a$ y un diagnóstico $d$, se definirá el riesgo relativo $\text{RR}_{(a,d)}(\mathcal{X},\mathcal{X}_{0})$ entre la población expuesta, $\mathcal{X}$, y la no expuesta, $\mathcal{X}_{0}$ como:
 
@@ -95,15 +70,76 @@ ggplot(melt(incidenciaInt[,c("meanQ","meanP","dec10","mean")], id.vars=c("mean",
 
 </center>
 
-Es importante mencionar que un riesgo relativo $>1$ ya indica una asociación positiva entre la enfermedad y el factor ambiental al que la población en estudio está expuesta, e indica una posible causalidad (Gordis, 2014, p. 217). Es por esto que es muy interesante encontrar riesgos relativos nacionales tan altos, pues indican que existe una gran asociación entre los factores de riesgo presentes en Quintero y Puchuncaví, y los diagnósticos correspondientes. De este modo, se seleccionarán algunos de los diagnósticos con mayor riesgo relativo nacional para un mayor análisis, en particular, un análisis temporal. 
-
-
-
-
-
-En cuanto a los datos de la contaminación del aire provistos por el SINCA (2018), se obtienen los siguientes gráficos (donde no se tiene información en el año 2011 para Quinter): 
+Es importante mencionar que un riesgo relativo $>1$ ya indica una asociación positiva entre la enfermedad y el factor ambiental al que la población en estudio está expuesta, e indica una posible causalidad (Gordis, 2014, p. 217). Es por esto que es muy interesante encontrar riesgos relativos nacionales tan altos, pues indican que existe una gran asociación entre los factores de riesgo presentes en Quintero y Puchuncaví, y los diagnósticos correspondientes. De este modo, se seleccionarán algunos de los diagnósticos con mayor riesgo relativo nacional para un mayor análisis, en particular, un análisis temporal. Tomando algunas de las enfermedades de la Figura 1, se graficarán sus incidencias año a año en Quintero, Puchuncaví y a nivel nacional (sin tener en cuenta a Quintero y Puchuncaví).
 <center>
-```{r echo=FALSE,fig.cap="Figura 2. Concentración de SO2 en Quintero y Puchuncaví a lo largo de los años.",fig.pos = 'p', fig.width=10,fig.height=5}
+```{r echo=FALSE,fig.cap="***Figura 2.** Comparación de las incidencias de aborto espontáneo.*" ,fig.pos = 'p', fig.width=10,fig.height=5}
+source("scripts\\abortoEspontaneo.R")
+ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
+geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
+  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+
+  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4, na.rm=TRUE)+
+  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4, na.rm=TRUE)+
+  labs(y = "Incidencia por cada mil personas",
+       x = "Año",
+       colour = "Comuna", size=25)+ 
+  ggtitle("Incidencia de aborto espontáneo de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  scale_x_continuous(breaks = d$Fecha)+ 
+  theme(legend.position = c(0.8, 0.9))
+```
+</center>
+En el gráfico anterior se observa que la incidencia de abortos espontáneos han estado consistentemente por sobre la incidencia nacional a través de los años. 
+
+<center>
+```{r echo=FALSE,fig.cap="***Figura 3.** Comparación de las incidencias de síndrome nefrítico.*" ,fig.pos = 'p', fig.width=10,fig.height=5}
+source("scripts\\paraplotearincidenciaporaño.R")
+ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
+  
+  geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+
+  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4, na.rm=TRUE)+
+  labs(y = "Incidencia por cada mil personas",
+       x = "Año",
+       colour = "Comuna", size=25)+ 
+  ggtitle("Incidencia de síndrome nefrítico de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  scale_x_continuous(breaks = d$Fecha)+ 
+  theme(legend.position = c(0.8, 0.9))
+```
+</center>
+En este gráfico se puede ver que la incidencia de síndrome nefrítico en Quintero y Puchuncaví superan la incidencia nacional ampliamente en algunos años (véase 2009 y 2017), por lo que se puede suponer cierta asociación entre factores de riesgo de Quinteros, pero especialmente Puchuncaví, y esta enfermedad.
+<center>
+```{r echo=FALSE,fig.cap="***Figura 4.** Comparación de las incidencias de retraso mental profundo.*" ,fig.pos = 'p', fig.width=10,fig.height=5}
+source("scripts\\retrasoMentalProfundo.R")
+ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
+  
+  geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+
+  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4, na.rm=TRUE)+
+  labs(y = "Incidencia por cada mil personas",
+       x = "Año",
+       colour = "Comuna", size=25)+ 
+  ggtitle("Incidencia de retraso mental profundo de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  scale_x_continuous(breaks = d$Fecha)+ 
+  theme(legend.position = c(0.8, 0.9))
+```
+</center>
+En el gráfico anterior se logra ver que la incidencia de casos de retraso mental profundo es casi nula todos los años excepto en el 2012, donde experimenta un peak tanto en Quintero y en Puchuncaví. Este peak no ocurre en la incidencia nacional, lo que indica una fuerte correlación entre los factores de riesgo de Quintero y Puchuncaví y el retraso mental profundo. Es importante mencionar que estos factores de riesgo no son necesariamente la contaminación, si no que estas comunas pueden tener muchos otros factores que hagan aumentar su incidencia en ciertas enfermedades.
+
+
+En cuanto a los datos de la contaminación del aire provistos por el SINCA (2018), se obtienen los siguientes gráficos (donde no se tiene información en el año 2011 para Quintero): 
+<center>
+```{r echo=FALSE,fig.cap="***Figura 5.** Concentración de SO2 en Quintero y Puchuncaví a lo largo de los años.*",fig.pos = 'p', fig.width=10,fig.height=5}
 library(ggplot2)
 library(reshape2)
 
@@ -139,7 +175,7 @@ MP10long <- melt(MP10, id="Fecha")
 colnames(MP10long)[2] <- "Comuna"
 ```
 
-```{r echo=FALSE,fig.cap="Figura 3. Concentración de MP10 en Quintero y Puchuncaví a lo largo de los años.",fig.pos = 'p', fig.width=10,fig.height=5}
+```{r echo=FALSE,fig.cap="***Figura 6.** Concentración de MP10 en Quintero y Puchuncaví a lo largo de los años.*",fig.pos = 'p', fig.width=10,fig.height=5}
 ggplot(data=MP10long,
        aes(x=Fecha, y=value, colour=Comuna)) +
   geom_line(size=2)+
@@ -152,38 +188,11 @@ ggplot(data=MP10long,
 
 </center>
 
-Se ve claramente un peak de ambas concentraciones y en ambas localidades alrededor del año 1995. También se nota que el MP10 en Quinterp ha estado en aumento la última década, pero el resto de indicadores se han mantenido relativamente constantes en este mismo período en ambas localidades.
-
-
-Como resultado parcial del análisis de los datos obtuvimos lo siguiente:
-
-```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('plots\\quin_prom.png')
-```
-Este gráfico muestra las enfermedades de mayor incidencia en Quintero, donde el mayor riesgo es presentado con la supervisión del embarazo, seguido por infecciones mientras dura el embarazo y la diabetes.
-
-```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('plots\\puch_prom.png')
-```
-En este otro gráfico se muestra, al igual que el anterior, las enfermedades de mayor incidencia, pero en este caso en Puchuncavi.
-
-```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('plots\\O030SO2Q.png')
-```
-En el gráfico anterior se observa una diferencia notable en los casos de aborto espontáneo por infección genital y pelviana entre Quintero y Pucón, que es la comuna más cercana demograficamente hablando (diferencia de solo 28 habitantes segun el censo de 2017). Además se observa que la concentración de SO2 en el aire de Quintero y la incidencia de aborto se comportan de manera similar, siendo esta última curva muy parecida a la de concentración pero desplazada, por lo que se presume una correlación. 
-
-```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('plots\\quintpucsindrome.png')
-```
-En este gráfico se puede ver que los caos de síndrome nefrítico en Quintero y Pucón se comportan de manera distinta, pero estudios indican que la incidencia en condiciones normales debería ser similar en toda la nación, por lo que también se presume factores de contaminación por este gráfico.
-
-```{r echo=FALSE, out.width='100%'}
-knitr::include_graphics('plots\\incidenciaycontQ.png')
-```
-En el gráfico anterior se logra ver una similitud entre el aumento de la concentración de SO2 en Quintero y la incidencia de síndrome nefrítico de Quintero, alcanzando peaks en los años que la contaminación los alcanza también.
-
+Se ve claramente un peak de ambas concentraciones y en ambas localidades alrededor del año 1995. También se nota que el MP10 en Quinterp ha estado en aumento la última década, pero el resto de indicadores se han mantenido relativamente constantes en este mismo período en ambas localidades. A simple vista no se ve una correlación clara entre las incidencias de las enfermedades de las Figuras 2, 3 y 4 y las concentraciones de SO2 y MP10, pero con técnicas estadísticas más avanzadas podría ser posible establecer una correlación, pero esto se escapa de los objetivos del presente informe.
 
 ## Conclusión
+
+Con los datos analizados se concluye que vale la pena seguir analizando la posible correlación entre ciertas enfermedades y la contaminación en la zona de Quintero y Puchuncaví. Si bien para establecer una causalidad se requiere de un estudio mucho más riguroso, se encntró que con el análisis epidemológico más simple se observa fuerte asociación para algunos de los diagnósticos y esto queda en evidencia al notar el alto riesgo relativo de estos con respecto al resto del país, y al observar la evolución temporal . Esto es sumamente preocupante, debido a la cantidad de vidas que potencialmente se verán afectadas a futuro, pues no sólo afecta la calidad de vida de los habitantes actuales, si no que empeora la calidad de vida de los que están por nacer ahí. 
 
 ## Referencias
 

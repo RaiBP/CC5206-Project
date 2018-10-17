@@ -1,4 +1,6 @@
 #### PRIMERO CORRER obtenerContaminacion.R ######
+library(ggplot2)
+library(reshape2)
 
 source("scripts\\obtenerContaminacion.R")
 

@@ -19,30 +19,11 @@ incN[is.na(incN)]<-0
 
 ####### Códigos de diagnosticos(cambiar para ver otra) ##########
 
-sindrNefr <- c("N000")
-for (i in 1:9){
-  n <- paste("N00",i,sep="")
-  sindrNefr <- c(sindrNefr,n)
-}
-
-for (i in 10:19){
-  n <- paste("N0",i,sep="")
-  sindrNefr <- c(sindrNefr,n)
-}
-
-for (i in 30:39){
-  n <- paste("N0",i,sep="")
-  sindrNefr <- c(sindrNefr,n)
-}
-
-for (i in 50:59){
-  n <- paste("N0",i,sep="")
-  sindrNefr <- c(sindrNefr,n)
-}
+retrasoMental <- c("F730","F731","F738","F739","F780","F781","F788","F789")
 ############ FIN calculo de codigo diagnosticos #############
 
 
-abquin<-incQ[incQ$id10 %in% sindrNefr,]
+abquin<-incQ[incQ$id10 %in% retrasoMental,]
 abquin <- abquin[,c(3:5,23:length(abquin))]
 
 sumaInc <- colSums(abquin[,4:19])
@@ -51,7 +32,7 @@ abquin[nrow(abquin) + 1,] = c(NA,NA,NA,sumaInc)
 
 abquin<-melt(abquin[nrow(abquin),], id=c("id10", "COMUNA","dec10"))
 
-ab0<-inc0[inc0$id10 %in% sindrNefr,]
+ab0<-inc0[inc0$id10 %in% retrasoMental,]
 ab0 <- ab0[,c(3:5,23:length(ab0))]
 
 sumaInc0 <- colSums(ab0[,4:19])
@@ -60,7 +41,7 @@ ab0[nrow(ab0) + 1,] = c(NA,NA,NA,sumaInc0)
 ab0<-melt(ab0[nrow(ab0),], id=c("id10", "COMUNA","dec10"))
 
 
-abN<-incN[incN$id10 %in% sindrNefr,]
+abN<-incN[incN$id10 %in% retrasoMental,]
 abN <- abN[,2:ncol(abN)]
 
 sumaIncN <- colSums(abN[,2:ncol(abN)])
@@ -108,25 +89,6 @@ ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+
   labs(y = "Incidencia por cada mil personas",
        x = "Año",
        colour = "Comuna", size=25)+ 
-  ggtitle("Incidencia de síndrome nefrítico de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  ggtitle("Incidencia de retraso mental profundo de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
   scale_x_continuous(breaks = d$Fecha)+ 
   theme(legend.position = c(0.8, 0.9))
-
-
-
-
-
-# ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
-#   geom_bar(aes(y = SO2), stat = "identity")+ 
-#   geom_line(aes(y = IncidenciaQ*75000, colour = "Quintero"),size=2)+ 
-#   geom_line(aes(y = Incidencia0*75000, colour = "Puchuncaví"),size=2)+ 
-#   geom_line(aes(y = IncidenciaN*75000, colour = "Nacional"),size=2)+ 
-#   scale_y_continuous(sec.axis = sec_axis(~./75, name = "Incidencia por cada mil personas"))+ 
-#   labs(y = "Concentración de SO2 en atmósfera en Quintero (ppb)",
-#               x = "Año",
-#               colour = "Comuna", size=25)+ 
-#   ggtitle("Incidencia de síndrome nefrítico de Quintero y Pucón (eje derecho) y concentración atmosférica de SO2 en Quintero (eje izquierdo)")+
-#   scale_x_continuous(breaks = d$Fecha)+ 
-#   theme(legend.position = c(0.8, 0.9))
-
-

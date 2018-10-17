@@ -1,5 +1,6 @@
 ---
-title: "Crisis medioambiental en Quintero y Puchuncaví: Análisis de egresos hospitalarios período 2002-2017 *(sujeto a cambios)*"
+title: "Crisis medioambiental en Quintero y Puchuncaví: Análisis de egresos hospitalarios período 2002-2017"
+author: "Raimundo Becerra Parra, Javier Muñoz Carvajal, Juan Saez Hidalgo"
 output: html_document
 header-includes:
   - \usepackage{amsmath}
@@ -53,7 +54,7 @@ $$
 Dado el dataset de egresesos hospitalarios, se contabilizó el número de casos para cada diagnóstico, comuna y año. Como se considera como población expuesta a las comunas de Quintero y Puchuncaví, y la población no expuesta como el resto del país, para obtener los riesgos relativos de cada diagnóstico, se deben calcular las incidencias de Quintero, de Puchuncaví y la del resto del país. Las primeras dos son fáciles de calcular, pues para cada diagnóstico y año basta dividir el número de casos por la población de Quintero o Puchuncaví, en el año correspondiente. Para calcular la incidencia del resto del país para cierto diagnóstico y un cierto año, se deben sumar los casos de todas las comunas del país, excepto Quintero y Puchuncaví, y dividir este número por la suma de las poblaciones de todas las comunas, excepto Quintero y Puchuncaví. De esta forma, se obtiene el **riesgo relativo nacional** de Quintero usando la fórmula de riesgo relativo recién expuesta y eligiendo $\mathcal{X} = \text{Quintero}$ y $\mathcal{X}_{0} = \text{Chile menos Quintero y Puchuncaví}$. Similarmente, se obtiene para Puchuncaví eligiendo $\mathcal{X} = \text{Puchuncaví}$. Promediando el riesgo relativo con respecto a los años, se pueden ordenar los diagnósticos de mayor a menor riesgo relativo nacional promedio. Seleccionando los 300 primeros diagnósticos con mayor riesgo relativo nacional promedio en Quintero y en Puchuncaví, y tomando la intersección de estos, se obtienen 46 diagnósticos, los 20 primeros (ordenando según el promedio entre Quintero y Puchuncaví) se muestran a continuación:
 
 <center>
-```{r echo=FALSE,fig.cap="Figura 1. Los 20 primeros diagnósticos con mayor riesgo relativo nacional promedio.",fig.pos = 'p', fig.width=10,fig.height=6}
+```{r echo=FALSE,fig.cap="***Figura 1.** Los 20 primeros diagnósticos con mayor riesgo relativo nacional promedio.*",fig.pos = 'p', fig.width=10,fig.height=6}
 library(ggplot2)
 library(reshape2)
 
@@ -196,7 +197,7 @@ ggplot(data=MP10long,
 
 </center>
 
-Se ve claramente un peak de ambas concentraciones y en ambas localidades alrededor del año 1995. También se nota que el MP10 en Quinterp ha estado en aumento la última década, pero el resto de indicadores se han mantenido relativamente constantes en este mismo período en ambas localidades. A simple vista no se ve una correlación clara entre las incidencias de las enfermedades de las Figuras 2, 3 y 4 y las concentraciones de SO2 y MP10, pero con técnicas estadísticas más avanzadas podría ser posible establecer una correlación, pero esto se escapa de los objetivos del presente informe.
+Se ve claramente un peak de ambas concentraciones y en ambas localidades alrededor del año 1995. También se nota que el MP10 en Quintero ha estado en aumento la última década, pero el resto de indicadores se han mantenido relativamente constantes en este mismo período en ambas localidades. Si bien a simple vista no se ve una correlación clara entre las incidencias de las enfermedades de las Figuras 2, 3 y 4 y las concentraciones de SO2 y MP10, con técnicas estadísticas más avanzadas podría ser posible establecer una correlación, pero esto se escapa de los objetivos del presente informe.
 
 ## Conclusión
 

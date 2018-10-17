@@ -2,12 +2,6 @@ library(readxl)
 library(reshape2)
 library(ggplot2)
 
-QSO2 <- read.csv("datasets\\contaminacion\\QSO2.csv", header=TRUE)
-QMP10 <-  read.csv("datasets\\contaminacion\\QMP10.csv", header=TRUE)
-PSO2 <- read.csv("datasets\\contaminacion\\PSO2.csv", header=TRUE)
-PMP10 <-  read.csv("datasets\\contaminacion\\PMP10.csv", header=TRUE)
-SO2 <- data.frame(PSO2[,c("Fecha","mean")],QSO2[,"mean"])
-
 ### ESTE DATASET (incidenciaPorComuna.csv) NO ESTA EN EL GIT PORQUE ES MUY GRANDE, DESCARGAR DEL DRIVE #######
 inc<-read.csv("datasets\\incidenciaPorComuna.csv", header = T)
 egr<-read.csv("datasets\\incidenciaPorComuna.csv", header = T)
@@ -65,14 +59,9 @@ ab0<- ab0[,5:6]
 abN<-data.frame(abN,Fecha)
 abN<- abN[,3:4]
 
-d <- merge(abquin,SO2[,c(1,3)],all=T)
+d <- merge(ab0,abquin,by="Fecha",all=T)
 
-
-colnames(d)[2:3] <- c("IncidenciaQ","SO2")
-
-d <- merge(ab0,d,by="Fecha",all=T)
-
-colnames(d)[2] <- c("Incidencia0")
+colnames(d)[2:3] <- c("Incidencia0","IncidenciaQ")
 
 
 d <- merge(abN,d,by="Fecha",all=T)

@@ -8,6 +8,7 @@ library("dplyr")
 
 
 egr <- read.csv("datasets\\egr2001_2017.csv")
+pobl <- read.csv("datasets\\datasumper.csv")
 egr[is.na(egr)] <- 0
 
 

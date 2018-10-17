@@ -191,13 +191,7 @@ En el gráfico anterior se logra ver una similitud entre el aumento de la concen
 ## Conclusión
 
 ## Referencias
-p.francesa {
-	text-indent: -30px;
-	position: absolute;
-	padding-left: 40px
-}
 
-<p class="francesa">
 El Mostrador. (21 de Agosto de 2018). 30 alumnos resultaron intoxicados por gas desconocido en la comuna de Quintero . Recuperado el 16 de Octubre de 2018, de El Mostrador: http://www.elmostrador.cl/noticias/pais/2018/08/21/30-alumnos-resultaron-intoxicados-por-gas-desconocido-en-la-comuna-de-quintero/
 
 El Mostrador. (23 de Agosto de 2018). Crisis ambiental en Quintero: declaran alerta amarilla tras nuevo episodio masivo de intoxicación . Recuperado el 16 de Octubre de 2018, de El Mostrador: http://www.elmostrador.cl/noticias/pais/2018/08/23/mas-de-40-personas-fueron-derivadas-al-hospital-por-nueva-nube-toxica-en-quintero/
@@ -219,4 +213,3 @@ Pras: Progrma para la Recuperación Ambiental y Social. (2016). Historia ambient
 Solis, C. (3 de Octubre de 2014). Derrame de petróleo en la bahía de Quintero fue de 22 mil litros y no 3 mil. Recuperado el 16 de Octubre de 2018, de 24 Horas: https://www.24horas.cl/nacional/derrame-de-petroleo-en-la-bahia-de-quintero-fue-de-22-mil-litros-y-no-3-mil-1438528
 
 The Clinic. (23 de Febrero de 2012). Bañistas de “las termas” de Ventanas se exponen a aguas ultra contaminadas. Recuperado el 16 de Octubre de 2018, de The Clinic: http://www.theclinic.cl/2012/02/23/banistas-de-las-termas-de-ventanas-se-exponen-a-aguas-ultra-contraminadas/
-</p>

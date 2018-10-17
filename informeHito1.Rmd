@@ -15,8 +15,13 @@ knitr::opts_chunk$set(echo = TRUE)
 Con el fin de mostrar de manera más explícita el problema al que se enfrenta la comuna de Quintero y Puchuncaví, junto con analizar los problemas que pueden venir a futuro, se utilizan herramientas de minería de datos para comparar distintos aspectos de la comuna con respecto a otras comunas y a nivel país.
 
 ## Contextualización del problema
+El martes 21 de agosto tres colegios de la comuna de Quintero, Liceo Politécnico, Colegio Santa Filomena y Alonso de Quintero, fueron evacuados debido a que 30 alumnos presentaron síntomas atribuidos a una nube tóxica que afecto a la localidad de Loncura, Quintero y Ventanas (El Mostrador, 2018a). Dos días después se declara alerta amarilla en la zona debido a la presencia de una nube amarilla que afecta a gran parte de la población, colapsando los centros de atención primaria y llamando la atención a nivel nacional (El Mostrador, 2018b).
 
-Recientemente se ha descubierto que los niveles de contaminación en las comunas de Quintero y Puchuncaví alcanzaron niveles críticos debido a malas regulaciones de industrias en la zona, esto ha provocado el aumento de distintas enfermedades y es probable que siga aumentando.
+De ahí en adelante la sintomatología en la población no ha parado, y pese a la gravedad de la situación no es la primera vez que las comunas de Quintero y Puchuncaví se enfrentan a una crisis medioambiental. Siendo alguno de ellos derrames de petróleo en la bahía de Loncura (Solis, 2014) (Manosalva & Obrador, 2016), el cierre de “aguas calientes” en Ventana (The Clinic, 2012) y las muchas quejas por la instalación de Ventanas de Codelco, en ese entonces Enami (Núñez & Olguín, 2018).
+
+El objetivo de este proyecto es, mediante el análisis de datos públicos como los egresos hospitalarios (de 2001 a 2017) (Minsal, 2017), la interpolación de datos demográficos de la INE y el censo (2002 a 2030) (Instituto Nacional de Estadísticas, 2014) y los datos de contaminación por comuna (2009 a 2015) (Ministerio del Medio Ambiente, 2018), evidenciar el daño (o la ausencia de éste) en el mediano plazo en las comunas de Quintero y Puchuncaví.
+
+La historia de Quintero y Puchuncaví nos muestra como la zona lleva un largo transcurso de contaminación ambiental. La termoeléctrica de Ventana, propiedad de la empresa estatal Chilectra, se instala en el año 1958, y la Fundición Ventanas, de en ese entonces ENAMI, en 1964. Ambas empresas, parte de un complejo industrial que ha crecido en los últimos años, han generado un gran impacto ambiental reconocido en el año 1992. Lo cual ha generado cambios en el protocolo de fiscalización ambiental (1992, 1994, 1995, 1998, 1999, 2001, 20002, 2011 y 2016) tanto local como nacional (Pras: Progrma para la Recuperación Ambiental y Social, 2016). La continua instalación de centrales de fundición y refinería, y el largo tiempo que esto ha ocurrido, hacen difícil de realizar un análisis de los efectos de la zona industrial. Por ello, solo se realiza un análisis del período que se encuentran datos para análisis (2002-2017).
 
 ## Datos a utilizar
 
@@ -187,10 +192,24 @@ En el gráfico anterior se logra ver una similitud entre el aumento de la concen
 
 ## Referencias
 
+El Mostrador. (21 de Agosto de 2018). 30 alumnos resultaron intoxicados por gas desconocido en la comuna de Quintero . Recuperado el 16 de Octubre de 2018, de El Mostrador: http://www.elmostrador.cl/noticias/pais/2018/08/21/30-alumnos-resultaron-intoxicados-por-gas-desconocido-en-la-comuna-de-quintero/
+
+El Mostrador. (23 de Agosto de 2018). Crisis ambiental en Quintero: declaran alerta amarilla tras nuevo episodio masivo de intoxicación . Recuperado el 16 de Octubre de 2018, de El Mostrador: http://www.elmostrador.cl/noticias/pais/2018/08/23/mas-de-40-personas-fueron-derivadas-al-hospital-por-nueva-nube-toxica-en-quintero/
+
 Gordis, L. (2014). *Epidemiology* (5ta ed.). Philadelphia, PA: Elsevier Saunders. 
 
-Ministerio de Salud, Departamento de Estadísticas e Información de Salud (DEIS) (2017). *Egresos Hospitalarios 2001-2017* [Dataset]. Gobierno de Chile. Recuperado de: https://reportesdeis.minsal.cl/Egresos2001_2016/egresos_2003/egresos.asp
+Instituto Nacional de Estadísticas. (2014). Proyección de población 2002 - 2020 (actualización 2014). Comunas: Población por sexo y edad simple [Dataset]. Recuperado el 16 de Octubre de 2018, de Instituto Nacional de Estadísticas (INE). Gobierno de Chile: http://www.ine.cl/estadisticas/demograficas-y-vitales
 
-Instituto Nacional de Estadísticas (INE) (2014). *Proyección de población 2002 - 2020 (actualización 2014). Comunas: Población por sexo y edad simple* [Dataset]. Gobierno de Chile. Recuperado de: http://www.ine.cl/estadisticas/demograficas-y-vitales
+Manosalva, J., & Obrador, P. (21 de Mayo de 2016). Vecinos de Quintero y Puchuncaví marchan en repudio ante nuevo derrame de ENAP. Recuperado el 16 de Octubre de 2018, de Bio Bio Chile: https://www.biobiochile.cl/noticias/2016/05/21/vecinos-de-quintero-y-puchuncavi-marchan-en-repudio-ante-nuevo-derrame-de-enap.shtml
 
-Ministerio del Medio Ambiente, Sistema de Informacion Nacional de Calidad del Aire (SINCA) (2018). *Registros de calidad del aire* [Dataset]. Gobierno de Chile. Recuperado de: https://sinca.mma.gob.cl/index.php/busqueda?cache=off&
+Ministerio del Medio Ambiente. (2018). Sistema de Informacion Nacional de Calidad del Aire (SINCA). Registros de calidad del aire [Dataset]. Recuperado el 16 de Octubre de 2018, de Ministerio del Medio Ambiente. Gobierno de Chile: https://sinca.mma.gob.cl/index.php/busqueda?cache=off&
+
+Minsal. (2017). Egresos Hospitalarios 2001-2017 [Dataset]. Recuperado el 16 de Octubre de 2018, de Ministerio de Salud, Departamento de Estadísticas e Información de Salud (DEIS) Gobierno de Chile: https://reportesdeis.minsal.cl/Egresos2001_2016/egresos_2003/egresos.asp
+
+Núñez, M. J., & Olguín, A. (1 de Septiembre de 2018). Los dolores que aquejan a Quintero y Puchuncaví. Recuperado el 16 de Octubre de 2018, de La Tercera: https://www.latercera.com/reportajes/noticia/los-dolores-aquejan-quintero-puchuncavi/303300/
+
+Pras: Progrma para la Recuperación Ambiental y Social. (2016). Historia ambiental de Quintero y Puchuncaví. Recuperado el 16 de Octubre de 2018, de Pras.gob: https://pras.mma.gob.cl/desarrollo_historico_ventanas/
+
+Solis, C. (3 de Octubre de 2014). Derrame de petróleo en la bahía de Quintero fue de 22 mil litros y no 3 mil. Recuperado el 16 de Octubre de 2018, de 24 Horas: https://www.24horas.cl/nacional/derrame-de-petroleo-en-la-bahia-de-quintero-fue-de-22-mil-litros-y-no-3-mil-1438528
+
+The Clinic. (23 de Febrero de 2012). Bañistas de “las termas” de Ventanas se exponen a aguas ultra contaminadas. Recuperado el 16 de Octubre de 2018, de The Clinic: http://www.theclinic.cl/2012/02/23/banistas-de-las-termas-de-ventanas-se-exponen-a-aguas-ultra-contraminadas/

@@ -12,9 +12,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introducción
 
-Con el fin de mostrar de manera más explícita el problema al que se enfrenta la comuna de Quintero y Puchuncaví, junto con analizar los problemas que pueden venir a futuro, se utilizan herramientas de minería de datos para comparar distintos aspectos de la comuna con respecto a otras comunas y a nivel país.
+Con el fin de mostrar de manera más explícita el problema al que se enfrenta la comuna de Quintero y Puchuncaví, junto con analizar los problemas que pueden venir a futuro, se utilizan herramientas de minería de datos para comparar distintos aspectos de las comunas con respecto a los datos a nivel país.
+
+Se espera encontrar una correlación entre la incidencia de enfermedades asociadas a contaminantes y la alta concentración de ciertos productos tóxicos en el aire de la zona.
 
 ## Contextualización del problema
+
 El martes 21 de agosto tres colegios de la comuna de Quintero, Liceo Politécnico, Colegio Santa Filomena y Alonso de Quintero, fueron evacuados debido a que 30 alumnos presentaron síntomas atribuidos a una nube tóxica que afecto a la localidad de Loncura, Quintero y Ventanas (El Mostrador, 2018a). Dos días después se declara alerta amarilla en la zona debido a la presencia de una nube amarilla que afecta a gran parte de la población, colapsando los centros de atención primaria y llamando la atención a nivel nacional (El Mostrador, 2018b).
 
 De ahí en adelante la sintomatología en la población no ha parado, y pese a la gravedad de la situación no es la primera vez que las comunas de Quintero y Puchuncaví se enfrentan a una crisis medioambiental. Siendo alguno de ellos derrames de petróleo en la bahía de Loncura (Solis, 2014) (Manosalva & Obrador, 2016), el cierre de “aguas calientes” en Ventana (The Clinic, 2012) y las muchas quejas por la instalación de Ventanas de Codelco, en ese entonces Enami (Núñez & Olguín, 2018).

@@ -68,7 +68,7 @@ d <- merge(abN,d,by="Fecha",all=T)
 
 colnames(d)[2] <- c("IncidenciaN")
 
-ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
+ggplot(d, aes(x = Fecha))+ 
 geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
   geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
   geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+

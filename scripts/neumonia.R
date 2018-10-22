@@ -19,11 +19,11 @@ incN[is.na(incN)]<-0
 
 ####### Códigos de diagnosticos(cambiar para ver otra) ##########
 
-retrasoMental <- c("F730","F731","F738","F739","F780","F781","F788","F789")
+codDiagnostico <- c("J120","J121","J122" , "J128","J129","J13","J14" , "J150", "J151", "J152" ,"J153","J154", "J155" ,"J156", "J157","J158","J159","J160","J168","J170","J171","J172","J173","J178","J180","J181","J182","J188","J189")
 ############ FIN calculo de codigo diagnosticos #############
 
 
-abquin<-incQ[incQ$id10 %in% retrasoMental,]
+abquin<-incQ[incQ$id10 %in% codDiagnostico,]
 abquin <- abquin[,c(3:5,23:length(abquin))]
 
 sumaInc <- colSums(abquin[,4:19])
@@ -32,7 +32,7 @@ abquin[nrow(abquin) + 1,] = c(NA,NA,NA,sumaInc)
 
 abquin<-melt(abquin[nrow(abquin),], id=c("id10", "COMUNA","dec10"))
 
-ab0<-inc0[inc0$id10 %in% retrasoMental,]
+ab0<-inc0[inc0$id10 %in% codDiagnostico,]
 ab0 <- ab0[,c(3:5,23:length(ab0))]
 
 sumaInc0 <- colSums(ab0[,4:19])
@@ -41,7 +41,7 @@ ab0[nrow(ab0) + 1,] = c(NA,NA,NA,sumaInc0)
 ab0<-melt(ab0[nrow(ab0),], id=c("id10", "COMUNA","dec10"))
 
 
-abN<-incN[incN$id10 %in% retrasoMental,]
+abN<-incN[incN$id10 %in% codDiagnostico,]
 abN <- abN[,2:ncol(abN)]
 
 sumaIncN <- colSums(abN[,2:ncol(abN)])
@@ -68,22 +68,16 @@ d <- merge(abN,d,by="Fecha",all=T)
 
 colnames(d)[2] <- c("IncidenciaN")
 
-
-
-
 ggplot(d, aes(x = Fecha))+ 
-  
-  geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2)+ 
-  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4)+
-  
-  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2)+
-  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4)+
-  
-  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2)+ 
-  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4)+
+  geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
+  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+
+  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4, na.rm=TRUE)+
+  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4, na.rm=TRUE)+
   labs(y = "Incidencia por cada mil personas",
        x = "Año",
        colour = "Comuna", size=25)+ 
-  ggtitle("Incidencia de retraso mental profundo de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  ggtitle("Incidencia de neumonía (todas las causas) en Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
   scale_x_continuous(breaks = d$Fecha)+ 
   theme(legend.position = c(0.8, 0.9))

@@ -1,0 +1,46 @@
+####******************************************************************###
+##Sample R code to accompany research article:                        ###
+##Modeling to Predict Cases of Hantavirus Pulmonary Syndrome in Chile ###
+##Monday December 30th, 2013                                          ###
+####******************************************************************###
+
+library(forecast)
+library(TSA) 
+
+#Fitting models with ARIMA errors in R
+
+#Read in data
+hanta <- read.table("/data path/hanta_data.txt")
+climate <- read.table("/data path/climate_data.txt", header=TRUE)
+
+
+#convert to time series variable
+cases <- ts(hanta[,2], frequency=12, start=c(2001,1)) #second column of hanta contains case counts
+
+
+#combine variables with one month lag
+xresp <-  cbind(cases, c(NA, precip[1:143])) #HPS cases and precipitation
+
+#fit and forecast in for loop
+valls <- matrix(0, 36, 4)     #define matrix for later use
+t = 1                         #counter 
+
+for(months in 108:143){ 
+        
+        fitt2 <- Arima(xresp[,1], xreg=xresp[,2], order=c(1,0,1))  #fit ARIMA model
+
+        j = months+1 
+
+	pval <- forecast(fitt2, xreg=xresp[months:j,2], level=c(95))$mean   #predicted value
+	plow <- forecast(fitt2, xreg=xresp[months:j,2], level=c(95))$lower  #lower CI value
+	pupp <- forecast(fitt2, xreg=xresp[months:j,2], level=c(95))$upper  #upper CI value
+	
+	valls[t,1] <- pval
+	valls[t,3] <- plow
+	valls[t,4] <- pupp
+	
+	t = t+1; #update counter
+	
+}
+
+valls 

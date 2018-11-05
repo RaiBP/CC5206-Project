@@ -2,32 +2,43 @@ library(readxl)
 library(data.table)
 library(forecast)
 library(TSPred)
+library(dplyr)
+library(lubridate)
 
 ##### PARA OBTENER UNA TIME SERIES DE OTRO DIAGNOSTICO DEBEN TENER LOS EGRESOS EN BRUTO DE TODOS LOS AÑOS en "datasets\\EgresosBruto"
 #Con en bruto me refiero a tal y como vienen descargados de https://reportesdeis.minsal.cl/Egresos2001_2016/egresos_2003/egresos.asp
 #Los egresos en bruto no los subo al github porque pesan mucho
 
-#para analizar la time series de neumonia o aborto espontaneo simplemente lean los archivos:
+#para analizar la time series de neumonia, aborto espontaneo, etc, simplemente lean los archivos:
 #"datasets\\time series\\AbortoEspontaneoTS.csv"
 #"datasets\\time series\\NeumoniaTS.csv"
-
+# etc, todos los que esten en time series
 
 #neumonia
-#codDiagnostico <- c("J120","J121","J122" , "J128","J129","J13","J04" , "J150", "J151", "J152" ,"J153","J154", "J155" ,"J156", "J157","J158","J159","J160","J168","J170","J171","J172","J173","J178","J180","J181","J182","J188","J189")
+codDiagnostico <- c("J120","J121","J122" , "J128","J129","J13","J04" , "J150", "J151", "J152" ,"J153","J154", "J155" ,"J156", "J157","J158","J159","J160","J168","J170","J171","J172","J173","J178","J180","J181","J182","J188","J189")
 
 #aborto espontaneo
-codDiagnostico <- c("O030","O031","O032","O033","O034","O035","O036","O037","O038","O039") 
+#codDiagnostico <- c("O030","O031","O032","O033","O034","O035","O036","O037","O038","O039") 
 
-#Quintero
-codigoEstab <- c(107108,107434)
+#transtornosMentalesUsoHipnoticos
+#codDiagnostico <- c("F130","F131","F132","F133","F134","F135","F136","F137","F138","F139")
+
+#tumor maligno esofago
+#codDiagnostico <- c("C150","C151","C152","C153","C154","C155","C159")
+
+#accidente cerebrovascular
+#codDiagnostico <- c("I610","I611","I612","I613","I614","I615","I616","I618","I619","I620","I621","I629","I630","I631","I632","I633","I634","I635","I636","I638","I639","I64","I678","I679","I688","I694","I698","G460","G461"," G462","G463","G464","G465","G466","G467","G468","I600","I601","I602","I603","I604","I605","I606","I607","I608","I609","I650","I651","I652","I653","I658","I659 OCLUSION","I660","I661","I662","I663","I664","I668","I669","I670","I671"," I672","I673","I674","I675","I676","I677","I680","I681","I682","I690","I691","I692","I693","I694","I698")
+
+#codigo hospital Quintero
+#codigoEstab <- c(107108,107434)
 
 #Quintero
 codComuna <- 5107
 
 #Puchuncavi
-#codComuna <- 5105
+# codComuna <- 5105
 
-source("scripts\\importar.R")
+# source("scripts\\importar.R")
 
 n17 <- egr2017[egr2017$DIAG1 %in% codDiagnostico & egr2017$COMUNA == codComuna,]
 n16 <- egr2016[egr2016$DIAG1 %in% codDiagnostico & egr2016$COMUNA == codComuna,]
@@ -46,7 +57,6 @@ n4 <- egr2004[egr2004$DIAG1 %in% codDiagnostico & egr2004$COMUNA == codComuna,]
 n3 <- egr2003[egr2003$DIAG1 %in% codDiagnostico & egr2003$COMUNA == codComuna,]
 n2 <- egr2002[egr2002$DIAG1 %in% codDiagnostico & egr2002$COMUNA == codComuna,]
 n1 <- egr2001[egr2001$DIAG1 %in% codDiagnostico & egr2001$COMUNA == codComuna,]
-
 
 ##### 2017 #########
 Fecha17 <- n17$FECHA_EGR
@@ -359,7 +369,8 @@ df06 <- data.frame(dates06)
 colnames(df06) <- "Fecha"
 
 z06 <- merge(frec06,df06, by="Fecha", all=TRUE)
-z06[is.na(z06)] <- 0
+z06[is.na(z06$N)]$N <- 0
+z06 <- na.omit(z06) 
 
 
 z06month <- z06 %>% group_by(month=floor_date(Fecha, "month")) %>%
@@ -411,7 +422,10 @@ df04 <- data.frame(dates04)
 colnames(df04) <- "Fecha"
 
 z04 <- merge(frec04,df04, by="Fecha", all=TRUE)
-z04[is.na(z04)] <- 0
+z04[is.na(z04$N)]$N <- 0
+z04 <- na.omit(z04) 
+
+
 
 
 z04month <- z04 %>% group_by(month=floor_date(Fecha, "month")) %>%
@@ -437,7 +451,9 @@ df03 <- data.frame(dates03)
 colnames(df03) <- "Fecha"
 
 z03 <- merge(frec03,df03, by="Fecha", all=TRUE)
-z03[is.na(z03)] <- 0
+z03[is.na(z03$N)]$N <- 0
+z03 <- na.omit(z03) 
+
 
 
 z03month <- z03 %>% group_by(month=floor_date(Fecha, "month")) %>%
@@ -463,7 +479,9 @@ df02 <- data.frame(dates02)
 colnames(df02) <- "Fecha"
 
 z02 <- merge(frec02,df02, by="Fecha", all=TRUE)
-z02[is.na(z02)] <- 0
+z02[is.na(z02$N)]$N <- 0
+z02 <- na.omit(z02) 
+
 
 
 z02month <- z02 %>% group_by(month=floor_date(Fecha, "month")) %>%
@@ -489,23 +507,26 @@ df01 <- data.frame(dates01)
 colnames(df01) <- "Fecha"
 
 z01 <- merge(frec01,df01, by="Fecha", all=TRUE)
-z01[is.na(z01)] <- 0
+z01[is.na(z01$N)]$N <- 0
+z01 <- na.omit(z01) 
 
 
 z01month <- z01 %>% group_by(month=floor_date(Fecha, "month")) %>%
   summarize(amount=sum(N))
 
+################### GUARDAR TIME SERIES ###################
+
 zmonthTotal <- rbind(z01month,z02month,z03month,z04month,z05month,z06month,z07month,z08month,z09month,z10month,z11month,z12month,z13month,z14month,z15month,z16month,z17month)
 
-#write.csv(zmonthTotal, file ="datasets\\time series\\AbortoEspontaneoTS.csv") #para guardar la TS que hayan hecho
+write.csv(zmonthTotal, file ="datasets\\time series\\QneumoniaTS.csv") #para guardar la TS que hayan hecho
 
-nTS <- ts(zmonthTotal$amount,start=c(2001,1), end=c(2017,1),frequency=12)
+nTS <- ts(zmonthTotal$amount,start=c(2001,1), end=c(2017,12),frequency=12)
 
 plot.ts(nTS)
 
 
 
-### de aqui para abajo es codigo para modelar algun forecast
+#################### de aqui para abajo es codigo para modelar algun forecast ###################
 
 diff1 <- diff(nTS,differences=1)
 plot.ts(diff1)
@@ -515,6 +536,8 @@ plot.ts(diff2)
 
 acf(diff1,lag.max=20)
 pacf(diff1,lag.max=20)
+pacf(nTS,lag.max=20)
+
 
 ## training con todos los datos
 
@@ -530,18 +553,17 @@ accuracy(model)
 
 train <- window(
   nTS,
-  end=c(2013,1))
+  end=c(2016,12))
 test <- window(
   nTS,
-  start=c(2013,2))
+  start=c(2017,1))
 ## fit a model on training data
-aaFit <- auto.arima(
-  train)
+aaFit <- auto.arima(train)
+
+checkresiduals(aaFit)
 ## forcast training model over
 ## the testing period
-aaPred <- forecast(
-  aaFit,
-  h=length(test))
+aaPred <- forecast(aaFit,h=length(test))
 plot(aaPred)
 
 
@@ -549,3 +571,4 @@ accuracy(aaPred,test)
 
 
 plotarimapred(nTS,aaFit,xlim=c(2001,2017))
+plot.ts(tsSO2)

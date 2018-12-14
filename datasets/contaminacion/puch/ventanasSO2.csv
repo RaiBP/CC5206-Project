@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fb786cde739b9f8cda72f45a59e87ff547e8faa751c9143e7766ad3ba9471126
-size 231
+FECHA (YYMMDD);HORA (HHMM);Registros validados;Registros preliminares;Registros no validados;
+130101;0000;;7,01708;;
+140101;0000;;7,1302;;
+150101;0000;;5,80863;;
+160101;0000;;7,01209;;
+170101;0000;;;5,83507;
+180101;0000;;;6,37607;

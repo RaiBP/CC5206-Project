@@ -1,0 +1,882 @@
+---
+title: "Crisis medioambiental en Quintero y Puchuncaví: Análisis de egresos hospitalarios período 2001-2017"
+author: "Raimundo Becerra Parra, Javier Muñoz Carvajal, Juan Saez Hidalgo"
+output: html_document
+header-includes:
+  - \usepackage{amsmath}
+  - \usepackage{mathtools}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introducción
+
+Con el fin de mostrar de manera más explícita el problema al que se enfrenta la comuna de Quintero y Puchuncaví, junto con analizar los problemas que pueden venir a futuro, se utilizan herramientas de minería de datos para comparar distintos aspectos de las comunas con respecto a los datos a nivel país, inspirados por el paper Modeling to Predict Cases of Hantavirus Pulmonary Syndrome in Chile (Nsoesie et al., 2014), que atribuye aumentos de temperatura al aumento del virus hanta, se espera encontrar una correlación entre la incidencia de enfermedades asociadas a contaminantes y la alta concentración de ciertos productos tóxicos en el aire de la zona.
+
+Además se utilizarán indicadores epidemiológicos como el riesgo relativo para encontrar las enfermedades que más se escapan de la realidad nacional en Quintero y Puchuncaví.
+
+## Contextualización del problema
+
+El martes 21 de agosto tres colegios de la comuna de Quintero, Liceo Politécnico, Colegio Santa Filomena y Alonso de Quintero, fueron evacuados debido a que 30 alumnos presentaron síntomas atribuidos a una nube tóxica que afecto a la localidad de Loncura, Quintero y Ventanas (El Mostrador, 2018a). Dos días después se declara alerta amarilla en la zona debido a la presencia de una nube amarilla que afecta a gran parte de la población, colapsando los centros de atención primaria y llamando la atención a nivel nacional (El Mostrador, 2018b).
+
+De ahí en adelante la sintomatología en la población no ha parado, y pese a la gravedad de la situación no es la primera vez que las comunas de Quintero y Puchuncaví se enfrentan a una crisis medioambiental. Siendo alguno de ellos derrames de petróleo en la bahía de Loncura (Solis, 2014) (Manosalva & Obrador, 2016), el cierre de “aguas calientes” en Ventana (The Clinic, 2012) y las muchas quejas por la instalación de Ventanas de Codelco, en ese entonces Enami (Núñez & Olguín, 2018).
+
+El objetivo de este proyecto es, mediante el análisis de datos públicos como los egresos hospitalarios (de 2001 a 2017) (Minsal, 2017), la interpolación de datos demográficos de la INE y el censo (2002 a 2030) (Instituto Nacional de Estadísticas, 2014) y los datos de contaminación por comuna (2009 a 2015) (Ministerio del Medio Ambiente, 2018), evidenciar el daño (o la ausencia de éste) en el mediano plazo en las comunas de Quintero y Puchuncaví.
+
+La historia de Quintero y Puchuncaví nos muestra como la zona lleva un largo transcurso de contaminación ambiental. La termoeléctrica de Ventana, propiedad de la empresa estatal Chilectra, se instala en el año 1958, y la Fundición Ventanas, de en ese entonces ENAMI, en 1964. Ambas empresas, parte de un complejo industrial que ha crecido en los últimos años, han generado un gran impacto ambiental reconocido en el año 1992. Lo cual ha generado cambios en el protocolo de fiscalización ambiental (1992, 1994, 1995, 1998, 1999, 2001, 20002, 2011 y 2016) tanto local como nacional (Pras: Progrma para la Recuperación Ambiental y Social, 2016). La continua instalación de centrales de fundición y refinería, y el largo tiempo que esto ha ocurrido, hacen difícil de realizar un análisis de los efectos de la zona industrial. Por ello, solo se realiza un análisis del período que se encuentran datos para análisis (2002-2017).
+
+## Datos a utilizar
+
+Para el presente análisis se utilizan los datos de egresos hospitalarios desde el año 2002 al año 2017 dados por el Departamento de Estadísticas e Información de Salud (2017), los cuales dan cuenta de el establecimiento, la comuna, la región, el diagóstico del egreso según la Clasificación Internacional de Enfermedades 10.ª edición (CIE-10), entre otros atributos. Se trabajará también con los datos de la proyección de población entre 2002 al 2020 dado por el Instituto Nacional de Estadísticas (2014), separados por comuna y sexo. Por último, se utilizan los datos del Sistema de Información Nacional de Calidad del Aire (2018), específicamente los índices de concentración de dióxido de azufre (SO2) y material particulado respirable con diámetro menor o igual a 10 $\mu$m (MP10) registrados anualmente en estaciones de monitoreo en las comunas de Quintero y Puchuncaví, entre 1993 y 2018.
+
+## Análisis exploratorio de los datos
+
+### Preliminares
+
+Para analizar los datos se utilizarán conceptos prestados de la epidemiología, disciplina que se encarga de estudiar la distribución de las enfermedades en la población y los factores que influyen en tal distribución. Primero se definirá la  **tasa de incidencia** o simplemente incidencia de una enfermedad como "el número de casos nuevos que ocurren en un período de tiempo específico en una población en riesgo de contraer la enfermedad" (Gordis, 2014, p. 41). 
+
+Si bien los egresos hospitalarios no dan cuenta completamente de los nuevos casos de una enfermedad, pues los casos de gente hospitalizada por una enfermedad tiende a ser mucho menor que los casos de gente con la enfermedad en sí, como el objetivo de este estudio no es realizar un estudio epidemiológico riguroso, se considerará el número de egresos hospitalarios en un año para una enfermedad dada como "el número de casos nuevos en un período de tiempo específico" (siendo el período de tiempo específico un año) y por lo tanto, en cuanto a este análisis concierne, podrán serán usados para calcular la incidencia de la enfermedad.
+
+Con el objetivo de aplicar el concepto al estudio en cuestión, se define $\mathcal{A}=\{2002,...,2017\}$ como el conjunto de los años en estudio y $\mathcal{D}$ el conjunto de los posibles diagnósticos dados por el CIE-10, se tiene entonces que para $a \in \mathcal{A}$ y $d \in \mathcal{D}$, se define la tasa de incidencia del diagnóstico $d$, en el año $a$ y para una población cualquiera $\mathcal{X}$,  $\text{I}_{(a,d)}(\mathcal{X})$, como: 
+
+$$\text{I}_{(a,d)}(\mathcal{X})=\frac{\text{N}_{(a,d)}(\mathcal{X})}{\text{P}_{a}(\mathcal{X})}$$
+
+Para estudiar qué tan fuerte es la asociación entre la exposición a cierto factor ambiental y el desarollo de una enfermedad, se seleccionan dos poblaciones, $\mathcal{X}$ y $\mathcal{X}_{0}$, donde la primera está expuesta a tal factor ambiental y la segunda no, y se define el **riesgo relativo** como el cociente entre la incidencia de la enfermedad en la primera población y la incidencia de la enfermedad en la segunda (Gordis, 2014, p. 218).  Por lo tanto, en el contexto del presente análisis, para un año $a$ y un diagnóstico $d$, se definirá el riesgo relativo $\text{RR}_{(a,d)}(\mathcal{X},\mathcal{X}_{0})$ entre la población expuesta, $\mathcal{X}$, y la no expuesta, $\mathcal{X}_{0}$ como:
+
+$$
+\text{RR}_{(a,d)}(\mathcal{X},\mathcal{X}_{0})=\frac{\text{I}_{(a,d)}(\mathcal{X})}{\text{I}_{(a,d)}(\mathcal{X}_{0})}
+$$
+
+### Análisis
+
+Dado el dataset de egresesos hospitalarios, se contabilizó el número de casos para cada diagnóstico, comuna y año. Como se considera como población expuesta a las comunas de Quintero y Puchuncaví, y la población no expuesta como el resto del país, para obtener los riesgos relativos de cada diagnóstico, se deben calcular las incidencias de Quintero, de Puchuncaví y la del resto del país. Las primeras dos son fáciles de calcular, pues para cada diagnóstico y año basta dividir el número de casos por la población de Quintero o Puchuncaví, en el año correspondiente. Para calcular la incidencia del resto del país para cierto diagnóstico y un cierto año, se deben sumar los casos de todas las comunas del país, excepto Quintero y Puchuncaví, y dividir este número por la suma de las poblaciones de todas las comunas, excepto Quintero y Puchuncaví. De esta forma, se obtiene el **riesgo relativo nacional** de Quintero usando la fórmula de riesgo relativo recién expuesta y eligiendo $\mathcal{X} = \text{Quintero}$ y $\mathcal{X}_{0} = \text{Chile menos Quintero y Puchuncaví}$. Similarmente, se obtiene para Puchuncaví eligiendo $\mathcal{X} = \text{Puchuncaví}$. Promediando el riesgo relativo con respecto a los años, se pueden ordenar los diagnósticos de mayor a menor riesgo relativo nacional promedio. Seleccionando los 300 primeros diagnósticos con mayor riesgo relativo nacional promedio en Quintero y en Puchuncaví, y tomando la intersección de estos, se obtienen 46 diagnósticos, los 20 primeros (ordenando según el promedio entre Quintero y Puchuncaví) se muestran a continuación:
+
+<center>
+```{r echo=FALSE,fig.cap="***Figura 1.** Los 20 primeros diagnósticos con mayor riesgo relativo nacional promedio.*",fig.pos = 'p', fig.width=10,fig.height=6}
+library(ggplot2)
+library(reshape2)
+
+incidencia <- read.csv("datasets\\RRnacionalFinal.csv", header=TRUE)
+is.na(incidencia) <- sapply(incidencia,is.infinite)
+
+diagInteres <- intersect(incidencia[order(incidencia$meanQ, decreasing = T),][1:300,"id10"],incidencia[order(incidencia$meanP, decreasing = T),][1:300,"id10"])
+
+incidenciaInt <- incidencia[incidencia$id10 %in% diagInteres,]
+incidenciaInt <- incidenciaInt[order(incidenciaInt$mean, decreasing = T),][1:20,]
+
+ggplot(melt(incidenciaInt[,c("meanQ","meanP","dec10","mean")], id.vars=c("mean","dec10")), aes(x=reorder(dec10, mean), y=value)) +   
+  geom_bar(aes(fill = variable), position = "dodge", stat="identity") +
+  coord_flip() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(fill="Comuna") +
+  scale_fill_discrete(labels = c("Quintero","Puchuncaví")) +
+  ggtitle("Diagnósticos con mayor riesgo relativo nacional") + 
+  xlab("Diagnóstico") + ylab("Riesgo relativo c/r a incidencia nacional, promediado de 2002 a 2017")+
+  scale_y_continuous(breaks = seq(0, 320, by = 20))
+```
+
+</center>
+
+Es importante mencionar que un riesgo relativo $>1$ ya indica una asociación positiva entre la enfermedad y el factor ambiental al que la población en estudio está expuesta, e indica una posible causalidad (Gordis, 2014, p. 217). Es por esto que es muy interesante encontrar riesgos relativos nacionales tan altos, pues indican que existe una gran asociación entre los factores de riesgo presentes en Quintero y Puchuncaví, y los diagnósticos correspondientes. De este modo, se seleccionarán algunos de los diagnósticos con mayor riesgo relativo nacional para un mayor análisis, en particular, un análisis temporal. Tomando algunas de las enfermedades de la Figura 1, se graficarán sus incidencias año a año en Quintero, Puchuncaví y a nivel nacional (sin tener en cuenta a Quintero y Puchuncaví).
+<center>
+```{r echo=FALSE,fig.cap="***Figura 2.** Comparación de las incidencias de aborto espontáneo.*" ,fig.pos = 'p', fig.width=10,fig.height=5}
+source("scripts\\abortoEspontaneo.R")
+ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
+geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
+  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+
+  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4, na.rm=TRUE)+
+  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4, na.rm=TRUE)+
+  labs(y = "Incidencia por cada mil personas",
+       x = "Año",
+       colour = "Comuna", size=25)+ 
+  ggtitle("Incidencia de aborto espontáneo de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  scale_x_continuous(breaks = d$Fecha)+ 
+  theme(legend.position = c(0.8, 0.9))
+```
+</center>
+En el gráfico anterior se observa que la incidencia de abortos espontáneos han estado consistentemente por sobre la incidencia nacional a través de los años. 
+
+<center>
+```{r echo=FALSE,fig.cap="***Figura 3.** Comparación de las incidencias de síndrome nefrítico.*" ,fig.pos = 'p', fig.width=10,fig.height=5}
+source("scripts\\paraplotearincidenciaporaño.R")
+ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
+  
+  geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+
+  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4, na.rm=TRUE)+
+  labs(y = "Incidencia por cada mil personas",
+       x = "Año",
+       colour = "Comuna", size=25)+ 
+  ggtitle("Incidencia de síndrome nefrítico de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  scale_x_continuous(breaks = d$Fecha)+ 
+  theme(legend.position = c(0.8, 0.9))
+```
+</center>
+En este gráfico se puede ver que la incidencia de síndrome nefrítico en Quintero y Puchuncaví superan la incidencia nacional ampliamente en algunos años (véase 2009 y 2017), por lo que se puede suponer cierta asociación entre factores de riesgo de Quinteros, pero especialmente Puchuncaví, y esta enfermedad.
+<center>
+```{r echo=FALSE,fig.cap="***Figura 4.** Comparación de las incidencias de retraso mental profundo.*" ,fig.pos = 'p', fig.width=10,fig.height=5}
+source("scripts\\retrasoMentalProfundo.R")
+ggplot(d[10:nrow(d)-1,], aes(x = Fecha))+ 
+  
+  geom_line(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaQ*1000, colour = "Quintero"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=2, na.rm=TRUE)+
+  geom_point(aes(y = Incidencia0*1000, colour = "Puchuncaví"),size=4, na.rm=TRUE)+
+  
+  geom_line(aes(y = IncidenciaN*1000, colour = "Nacional"),size=2, na.rm=TRUE)+ 
+  geom_point(aes(y = IncidenciaN*1000, colour = "Nacional"),size=4, na.rm=TRUE)+
+  labs(y = "Incidencia por cada mil personas",
+       x = "Año",
+       colour = "Comuna", size=25)+ 
+  ggtitle("Incidencia de retraso mental profundo de Quintero, Puchuncaví y a nivel nacional (sin contar Quintero ni Puchuncaví)")+
+  scale_x_continuous(breaks = d$Fecha)+ 
+  theme(legend.position = c(0.8, 0.9))
+```
+</center>
+En el gráfico anterior se logra ver que la incidencia de casos de retraso mental profundo es casi nula todos los años excepto en el 2012, donde experimenta un peak tanto en Quintero y en Puchuncaví. Este peak no ocurre en la incidencia nacional, lo que indica una fuerte correlación entre los factores de riesgo de Quintero y Puchuncaví y el retraso mental profundo. Es importante mencionar que estos factores de riesgo no son necesariamente la contaminación, si no que estas comunas pueden tener muchos otros factores que hagan aumentar su incidencia en ciertas enfermedades.
+
+
+En cuanto a los datos de la contaminación del aire provistos por el SINCA (2018), se obtienen los siguientes gráficos (donde no se tiene información en el año 2011 para Quintero): 
+<center>
+```{r echo=FALSE,fig.cap="***Figura 5.** Concentración de SO2 en Quintero y Puchuncaví a lo largo de los años.*",fig.pos = 'p', fig.width=10,fig.height=5}
+library(ggplot2)
+library(reshape2)
+
+source("scripts\\obtenerContaminacion.R")
+
+QSO2 <- read.csv("datasets\\contaminacion\\QSO2.csv", header=TRUE)
+QMP10 <-  read.csv("datasets\\contaminacion\\QMP10.csv", header=TRUE)
+PSO2 <- read.csv("datasets\\contaminacion\\PSO2.csv", header=TRUE)
+PMP10 <-  read.csv("datasets\\contaminacion\\PMP10.csv", header=TRUE)
+
+SO2 <- data.frame(PSO2[,c("Fecha","mean")],QSO2[,"mean"])
+colnames(SO2) <- c("Fecha","Puchuncavi","Quintero")
+
+SO2long <- melt(SO2, id="Fecha")
+
+colnames(SO2long)[2] <- "Comuna"
+
+ggplot(data=SO2long,
+       aes(x=Fecha, y=value, colour=Comuna)) +
+  geom_line(size=2)+
+  geom_point(size=4, na.rm=TRUE)+
+  ggtitle("Concentración de SO2 en la atmósfera, Quintero y Puchuncaví") + 
+  xlab("Año") + ylab("Concentración de SO2 en atmósfera (ppb)")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))+
+  scale_x_continuous(breaks = SO2$Fecha)
+
+
+MP10 <- data.frame(PMP10[,c("Fecha","mean")],QMP10[,"mean"])
+colnames(MP10) <- c("Fecha","Puchuncavi","Quintero")
+
+MP10long <- melt(MP10, id="Fecha")
+
+colnames(MP10long)[2] <- "Comuna"
+```
+
+```{r echo=FALSE,fig.cap="***Figura 6.** Concentración de MP10 en Quintero y Puchuncaví a lo largo de los años.*",fig.pos = 'p', fig.width=10,fig.height=5}
+ggplot(data=MP10long,
+       aes(x=Fecha, y=value, colour=Comuna)) +
+  geom_line(size=2)+
+  geom_point(size=4, na.rm=TRUE)+
+  ggtitle("Concentración de MP10 en la atmósfera, Quintero y Puchuncaví") + 
+  xlab("Año") + ylab("Concentración de MP10 en atmósfera (μg/m3N)")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5))+
+  scale_x_continuous(breaks = MP10$Fecha)
+```
+
+</center>
+
+Se ve claramente un peak de ambas concentraciones y en ambas localidades alrededor del año 1995. También se nota que el MP10 en Quintero ha estado en aumento la última década, pero el resto de indicadores se han mantenido relativamente constantes en este mismo período en ambas localidades. Si bien a simple vista no se ve una correlación clara entre las incidencias de las enfermedades de las Figuras 2, 3 y 4 y las concentraciones de SO2 y MP10, con técnicas estadísticas más avanzadas podría ser posible establecer una correlación, pero esto se escapa de los objetivos del presente informe.
+
+# Hito 2: Datos adicionales y segundo análisis
+Luego del primer análisis exploratorio, se decidió trabajar con series temporales de modo de aplicar modelos predictivos sobre ellas. Para esto, se necesita una cantidad relativamente grande de observaciones, por lo que una resolución anual no era adecuada. De esta forma, se decidió por una resolución mensual, de manera de poder tener en cuenta la estacionalidad dentro de un mismo año, es decir, ver cómo el mes o la estación del año afecta a la serie de tiempo. Para obtener los egresos mensuales en cada comuna, se agruparon los egresos del mismo mes gracias al atributo "fecha del egreso". Para la serie de tiempo de los egresos totales, se decidió eliminar de esto los diagnósticos de "parto normal", ya que se consideró que este tipo de egreso ocupaba una proporción muy grande del total, y además no se relacionaba con la contaminación, es decir, se podían considerar como ruido. Además, se agregó el año 2001 al análisis de egresos, el cual estaba ausente en el hito anterior.
+
+Los datos mensuales para los contaminantes SO2, MP10, O3 (ozono), HCT (hidrocarburos totales) y HCNM (hidrocarburos no metánicos) fueron obtenidos directamente del dataset del SINCA. Cada comuna tiene al rededor de 5 estaciones distintas de medición del aire. En el caso de Quintero, todas estas por algún motivo desconocido no registraron datos el año 2011, por lo que en esta sección se decantó por trabajar solo con la comuna de Puchuncaví. Esta, sin embargo, no estaba excenta de datos de contaminación faltantes, por lo que se hicieron aproximaciones. La primera fue promediar los registros de cada contaminante en las distintas estaciones de medición y considerar la serie de tiempo resultante como la serie de tiempo representativa de ese contaminante en la comuna. Este promedio fue realizado solo considerando el número de valores que no eran NA, por lo que se dio el caso donde aún quedaron datos en NA. Para reparar esto, se realizó una aproximación sobre la serie de tiempo usando la función de R *na.kalman* del paquete ***imputeTS***  (Moritz y Bartz-Beielstein, 2017), la cual agrega una aproximación de los datos faltantes.
+
+Considerando los nuevos datos disponibles se plantea una nueva hipótesis: dado un modelo predictivo de los egresos hospitalarios, tener en cuenta la contaminación como atributo (o covariante) mejora su capacidad predictiva.
+
+
+## Dynamic Time Warping
+
+Con el fin de trabajar con una ventana de tiempo que permita obtener información relevante respecto a la relación entre egresos y contaminantes (por ejemplo, su correlación y el desfase de correlación máxima entre estos), se busca que esta porción tenga un comportamiento similar a la contaminación a evaluar. Para esto, se utiliza el algoritmo de Dynamic Time Warping para buscar similitud entre las series de tiempo, ya sea en la actualidad o en el tiempo pasado, siendo este desfase de tiempo (en meses) el denominado "lag" del que se hará mención más adelante.
+El Código 1 (en la sección Códigos) ejemplifica cómo se generaron las time series de los contaminantes, en este caso, el SO2 registrado en Puchuncaví. Con estas time series, utilizando la librería ***dtw*** (Giorgino, 2009) se genera el modelo DTW que toma en cuenta la ventana de egresos a comparar y los niveles de contaminación en Puchuncavi, entregando un gráfico del estilo de la Figura 7. Se decidió utilizar un tamaño de ventana de un año y para el SO2 se obtuvo que la ventana con mayor semejanza en comportamiento es la que se muestra en la Figura 7, del período 01/2003 a 01/2004.
+
+<center>
+
+```{r echo=FALSE,fig.cap="***Figura 7.** Matriz de costo entregado por el modelo DTW.*",fig.pos = 'p', fig.width=10,fig.height=5,message=FALSE,warning=FALSE}
+library(dtw);
+library(imputeTS);
+
+PSO2estacionpuch <- read.csv("datasets\\contaminacion\\puch\\mensual\\epuchuncaviMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2lagreda <- read.csv("datasets\\contaminacion\\puch\\mensual\\lagredaMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2maitenes <- read.csv("datasets\\contaminacion\\puch\\mensual\\losmaitenesMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2ventanas<- read.csv("datasets\\contaminacion\\puch\\mensual\\ventanasMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2campiche<- read.csv("datasets\\contaminacion\\puch\\mensual\\campicheMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+
+data0 <- PSO2estacionpuch[,c(1,3:5)]
+colnames(data0) <- c("Fecha","Validado","Preliminar","NoValidado")
+data0$Fecha <- seq(as.Date("1993/01/01"), as.Date("2018/10/01"), by = "month")
+data0$estPuchuncavi <- rowMeans(data0[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data0 <- data0[,c(1,5)]
+
+data1 <- PSO2lagreda[,c(1,3:5)]
+colnames(data1) <- c("Fecha","Validado","Preliminar","NoValidado")
+data1$Fecha <- seq(as.Date("1993/01/01"), as.Date("2018/10/01"), by = "month")
+data1$lagreda <- rowMeans(data1[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data1 <- data1[,c(1,5)]
+
+data2 <- PSO2maitenes[,c(1,3:5)]
+colnames(data2) <- c("Fecha","Validado","Preliminar","NoValidado")
+data2$Fecha <- seq(as.Date("1993/04/01"), as.Date("2018/10/01"), by = "month")
+data2$maitenes <- rowMeans(data2[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data2 <- data2[,c(1,5)]
+
+data3 <- PSO2ventanas[,c(1,3:5)]
+colnames(data3) <- c("Fecha","Validado","Preliminar","NoValidado")
+data3$Fecha <- seq(as.Date("2013/01/01"), as.Date("2018/10/01"), by = "month")
+data3$ventanas <- rowMeans(data3[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data3 <- data3[,c(1,5)]
+
+data4 <- PSO2campiche[,c(1,3:5)]
+colnames(data4) <- c("Fecha","Validado","Preliminar","NoValidado")
+data4$Fecha <- seq(as.Date("2013/01/01"), as.Date("2017/03/01"), by = "month")
+data4$campiche <- rowMeans(data4[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data4 <- data4[,c(1,5)]
+
+
+PSO2 <- merge(data4,merge(data3,merge(merge(data0,data1,by="Fecha",all=T),data2,by="Fecha",all=T),by="Fecha",all=T),by="Fecha",all=T)
+
+PSO2$mean <- rowMeans(PSO2[, 2:6], na.rm=TRUE)
+
+tsPSO2 <- ts(PSO2$mean, start=c(1993,1), end=c(2018,10),frequency=12)
+
+sinpartos <- read.csv("datasets\\time series\\PTotalSinPartosTS.csv");
+x1 <- ts(sinpartos$amount,start=c(2001,1), end=c(2017,12),frequency=12);
+x2 <- na.kalman(tsPSO2);
+start<-c(2003,01);
+end<-c(2003,12);
+x1window <- window(x1,start,end);
+
+alineacionxx<-dtw(x1window,x2,keep=TRUE);
+plot(alineacionxx,type="threeway", main="Alineación de series de tiempo", xlab="Ventana de egresos totales en Puchuncaví año 2003", ylab="SO2 en Puchuncaví")
+```
+
+</center>
+
+## Modelo predictivo: ARIMA
+Basados en el paper sobre el virus hanta de Nsoesie, et al. (2014) mencionado en la introducción, se utilizó el modelo ARIMA para intentar predecir el comportamiento de los egresos dados los datos de contaminación ya mencionados. ARIMA, del inglés *autoregressive integrated moving average*, es un modelo de regresión ampliamente usado para la predicción de series de tiempo.
+
+Para aplicar este modelo, lo primero que se realizó fue un análisis a la posible correlación de los egresos y los contaminantes. Para esto, se tomó la ventana de egresos con menor distancia DTW al contaminante, y se fue superponiendo sobre la serie de tiempo de este último para todos los lags (o desfaces de tiempo) posibles. Se calculó entonces la correlación (usando fórmula de Pearson) entre los datos solapados para cada lag y se obtiene una matriz de lags vs correlación. En resumen, dada una ventana de tiempo, para cada contaminante se calculó una matriz donde a cada lag le corresponde una valor entre -1 y 1, la correlación. Si uno grafica esta matriz usando el lag como eje x, se tiene que todos los contaminantes tienen peaks de correlación, siendo estos del orden de los 0.4-0.8 para todos los contaminantes. Como ningún contaminante obtuvo una correlación significativamente mayor al resto, a priori no se decidió descartar ninguno. Siguiendo la línea de la sección anterior, donde se encontró que la ventana más cercana al SO2 era la de enero de 2003 a enero de 2004, se ejemplifica la obtención de la matriz de lags vs correlación para el SO2 en el Código 2 de la sección de Códigos, y el gráfico resultante a continuación:
+
+<center>
+
+```{r echo=FALSE,fig.cap="***Figura 8.** Gráfico de lags vs correlación para SO2.*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE}
+library(ggplot2)
+library(corrr)
+library(reshape2)
+library(timeDate)
+library(forecast)
+library(TSA) 
+library(imputeTS)
+library(lubridate)
+library(readxl)
+library(data.table)
+library(TSPred)
+library(dplyr)
+library(scales)
+
+#función auxiliar
+elapsed_months <- function(end_date, start_date) {
+  ed <- as.POSIXlt(end_date)
+  sd <- as.POSIXlt(start_date)
+  12 * (ed$year - sd$year) + (ed$mon - sd$mon)
+}
+
+x1 <- ts(sinpartos$amount,start=c(2001,01),end=c(2017,12),frequency=12) ##´elegir TS aca
+x2 <- na.kalman(tsPSO2)
+
+## seleccionar ventana de tiempo de interés
+startx1 <- ymd("2003-01-01")
+endx1 <- ymd("2004-01-01")
+
+x1window <- window(x1,
+start=as.numeric(c(format(as.Date(startx1, format="%Y-%m-%d"),"%Y"),format(as.Date(startx1, format="%Y-%m-%d"),"%m"))),
+end=as.numeric(c(format(as.Date(endx1, format="%Y-%m-%d"),"%Y"),format(as.Date(endx1, format="%Y-%m-%d"),"%m"))))
+
+output <- as.data.frame(cbind(0,0))
+
+colnames(output) <- c("Lag","SO2")
+
+endlag <- elapsed_months(startx1,"1993-01-01")
+
+for (lag in 0:endlag){
+
+  startx2 <- startx1 %m-% months(lag) 
+  endx2 <- endx1 %m-% months(lag) 
+  
+  x2window <- window(
+  x2,
+  start=as.numeric(c(format(as.Date(startx2, format="%Y-%m-%d"),"%Y"),format(as.Date(startx2, format="%Y-%m-%d"),"%m"))),
+  end=as.numeric(c(format(as.Date(endx2, format="%Y-%m-%d"),"%Y"),format(as.Date(endx2, format="%Y-%m-%d"),"%m"))))
+  
+  
+  d1 <- data.frame(x1=as.matrix(x1window))
+  d2 <- data.frame(x2=as.matrix(x2window))
+  
+  d <- cbind(d1,d2)
+  
+  corr <- correlate(d)[1,3]
+  
+  row <-  as.data.frame(cbind(lag,corr))
+  
+  colnames(row) <- c("Lag","SO2")
+  
+  output <- rbind(output,row)
+  
+}
+
+lagVScorrelationEgrSinPartosSO2 <- output[-1,]
+
+outputlong <- melt(lagVScorrelationEgrSinPartosSO2[,c(1,2)], id="Lag") ## aqui quitar o meter parametros en el vector c(1,...,6) para plotear
+
+colnames(outputlong)[2] <- "Factor"
+
+ggplot(data=outputlong,
+       aes(x=Lag, y=value,colour=Factor)) +
+  geom_line(size=2,color="#FCE61F")+
+  ggtitle("Correlación vs Lag, ventana 01/2003- 01/2004 para egresos totales (sin partos normales) y SO2") + 
+  xlab("Lag (en meses)") + ylab("Correlación")+
+  xlim(0,97)+
+  theme(axis.title.y=element_text(size=15),axis.title.x=element_text(size=15),axis.text.x = element_text(angle=90,hjust=1,size=15), axis.text.y = element_text(size=15), plot.title = element_text(size = 15),legend.text=element_text(size=15),legend.key = element_rect(colour = "transparent", fill = alpha('grey20', 0.1)),legend.background = element_rect(fill=alpha('grey20', 0)))
+
+
+```
+
+</center>
+Encontrada la matriz de lags vs correlación para un contaminante dado, se selecciona el lag con la correlación más cercana a 1, lag que será conocido como lag de correlación máxima. Con este lag de máxima correlación en mente, se explicará el proceso para obtener un modelo predictivo ARIMA en R. Para facilitar la explicación, se seguirá utilizando el ejemplo del SO2, el cual será usado como covariante o variable exógena en el modelo. Es importante mencionar que se pueden agregar cuantas variables exógenas se quiera, es decir, se podrían utilizar todos o incluso ninguno de los contaminantes en un solo modelo. El experimento consistirá en analizar qué tan bien el modelo es capaz de predecir los valores del periódo 01/2017-12/2017. Para esto, el modelo tomará como datos de entrenamiento los egresos desde el 01/2001 al 12/2016 y como variable exógena de entrenamiento los valores de SO2 dentro de una ventana de tiempo del mismo largo, pero desfasada en el lag de máxima correlación. En este caso entonces, los datos de entrenamiento de la variable exógena serán los datos de SO2 desde 02/2000 a 01/2016. Los datos de testeo para los egresos serán desde el 01/2017 al 12/2017 y para la variable exógena serán los datos de SO2 desde 02/2016 hasta 01/2017. Estas ventanas de tiempo entonces son entregadas a la función del paquete ***forecast*** (Hydnman y Khandakar, 2008) auto.arima, la cual genera el modelo. Se muestra entonces el código necesario para obtener el modelo en el Código 3 de la sección de Códigos y los resultados a continuación:
+
+<center>
+
+```{r echo=FALSE,fig.cap="***Figura 7.** Matriz.*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE,results='hide'}
+
+x2 <- na.kalman(tsPSO2)
+x1 <- ts(sinpartos$amount,start=c(2001,1), end=c(2017,12),frequency=12) 
+
+corr <- lagVScorrelationEgrSinPartosSO2
+
+corrtempx2 <- corr[order(corr$SO2,decreasing=T),]
+lagx2 <- corrtempx2[corrtempx2$Lag < 97,]$Lag[1]
+
+
+endTrain <- ymd("2016-12-01") ## fecha de término para train data e egresos
+startTest <-  endTrain %m+% months(1) ## fecha de inicio para test data de egresos
+
+
+startx2Train <- ymd("2001-01-01") %m-% months(lagx2) ## fecha de incio para train data de covariantes (se restan los meses de lag) 
+endx2Train <- endTrain %m-% months(lagx2) ## fecha de término para train data de covariantes (se restan los meses de lag)
+startx2Test <-  endx2Train %m+% months(1) ## fecha de inicio para test data de covariantes
+endx2Test <- ymd("2017-12-01") %m-% months(lagx2)
+
+
+trainx2 <- window(
+  x2,start=as.numeric(c(format(as.Date(startx2Train, format="%Y-%m-%d"),"%Y"),format(as.Date(startx2Train, format="%Y-%m-%d"),"%m"))),
+  end=as.numeric(c(format(as.Date(endx2Train, format="%Y-%m-%d"),"%Y"),format(as.Date(endx2Train, format="%Y-%m-%d"),"%m"))))
+
+train2 <- unclass(trainx2)
+
+testx2 <- window(
+  x2,
+  start=as.numeric(c(format(as.Date(startx2Test, format="%Y-%m-%d"),"%Y"),format(as.Date(startx2Test, format="%Y-%m-%d"),"%m"))),end=as.numeric(c(format(as.Date(endx2Test, format="%Y-%m-%d"),"%Y"),format(as.Date(endx2Test, format="%Y-%m-%d"),"%m"))))
+
+test2 <- unclass(testx2)
+
+train1 <- window(
+  x1,
+  end=as.numeric(c(format(as.Date(endTrain, format="%Y-%m-%d"),"%Y"),format(as.Date(endTrain, format="%Y-%m-%d"),"%m"))))
+
+test1 <- window(
+  x1,
+  start=as.numeric(c(format(as.Date(startTest, format="%Y-%m-%d"),"%Y"),format(as.Date(startTest, format="%Y-%m-%d"),"%m"))))
+
+## modelo ##
+fit1 <- auto.arima(train1, xreg = train2) 
+
+fcast1 <- forecast(fit1, xreg = test2)
+
+
+
+
+plotfcast<-function(dn,fcast){ 
+  require(zoo) #se necesita para la funcion as.yearmon()
+  
+  en<-max(time(fcast$mean)) #extraer la fecha máxima usada en el forecast
+  
+  #extraer training data y datos originales
+  ds<-as.data.frame(window(dn,end=en))
+  names(ds)<-'observed'
+  ds$date<-as.Date(time(window(dn,end=en)))
+  
+  #extraer "fitted data""
+  dfit<-as.data.frame(fcast$fitted)
+  dfit$date<-as.Date(time(fcast$fitted))
+  names(dfit)[1]<-'fitted'
+  
+  ds<-merge(ds,dfit,all.x=T) #Merge fitted values with source and training data
+  
+  #extraer "forecast data" e intervalos de confianza
+  dfcastn<-as.data.frame(fcast)
+  dfcastn$date <- seq(from=startTest,to=ymd("2017-12-01"), by = "month")
+  names(dfcastn)<-c('forecast','lo80','hi80','lo95','hi95','date')
+  
+  pd<-merge(ds,dfcastn,all.x=T) #data.frame final para usar en ggplot
+  return(pd)
+  
+}
+
+```
+
+```{r echo=FALSE,fig.cap="***Figura 9.** Resultado del modelo con SO2 de covariante para egresos totales (sin partos normales).*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE}
+pd<-plotfcast(x1,fcast1)
+p1a<-ggplot(data=pd,aes(x=date,y=observed)) 
+p1a <- p1a+geom_ribbon(aes(ymin=lo95,ymax=hi95),alpha=0.3,fill="grey20")
+p1a<-p1a+geom_line(aes(colour="data"),size=2)
+p1a<-p1a+geom_line(aes(y=fitted,colour="fit"),size=2)
+p1a<-p1a+geom_point(aes(y=fitted),colour="#218B4F",size=4,shape=21,fill=NA,stroke=2)
+p1a<-p1a+geom_line(aes(y=forecast,colour="prediction"),size=2)
+p1a<-p1a+scale_x_date(name="Año",breaks='1 year',minor_breaks='1 month',labels=date_format("%Y"),expand=c(0,0))
+p1a<-p1a+scale_y_continuous(name="Número de egresos")
+p1a<-p1a+ggtitle("Modelo basado en SO2 para egresos hospitalarios totales en Puchuncaví")
+p1a <- p1a + scale_colour_manual(name="",
+                                 values=c(data="black", fit="#218B4F", prediction="#AFFFDD"))
+p1a <- p1a+theme(axis.title.y=element_text(size=15),axis.title.x=element_text(size=15),axis.text.x = element_text(angle=90,hjust=1,size=15), axis.text.y = element_text(size=10), plot.title = element_text(size = 15),legend.text=element_text(size=15),legend.position = c(0.77, 0.9),legend.key = element_rect(colour = "transparent", fill = alpha('grey20', 0.1)),legend.background = element_rect(fill=alpha('grey20', 0)))
+
+p1a
+
+```
+
+</center>
+
+A continuación se entregan los errores que se consideraron más relevantes, cuyo significado matemático lo dan Hyndman y Athanasopoulos (2018):
+
+<center>
+
+```{r echo=FALSE,fig.cap="***Figura 10.** Errores asociados al modelo con SO2 de covariante para egresos totales.*",fig.pos = 'p', fig.width=10,fig.height=1,warning=FALSE,message=FALSE}
+accuracy <- as.data.frame(accuracy(fcast1,test1))
+
+library(gridExtra)
+library(grid)
+
+d <- head(round(accuracy[,c(2,3,5,6)],digits=2))
+grid.table(d)
+
+```
+
+</center>
+
+Ahora, el modelo recién presentado no puede confirmar ni refutar la hipótesis por sí mismo, pero sí ilustra el procedimiento que se siguió para obtener los modelos que se presentarán a continuación. Para poder compararlo, se presenta entonces el modelo que no toma en cuenta ningún contaminante como covariante, es decir, el modelo intentará predecir utilizando solo los valores de egreso pasados. El código para generar este modelo se encuentra en el Código 4 en la sección de Códigos, y el resultado se muestra a continuación:
+
+<center>
+```{r echo=FALSE,fig.cap="***Figura 7.** Matriz.*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE}
+######## MODELO SIN COVARIANTES ########
+train <- window(
+  x1,
+  end=c(2016,12))
+test <- window(
+  x1,
+  start=c(2017,1))
+
+fit2 <- auto.arima(train)
+
+fcast2 <- forecast(fit2,h=length(test))
+```
+
+```{r echo=FALSE,fig.cap="***Figura 11.** Resultado del modelo sin covariantes para egresos totales (sin partos normales).*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE}
+pd<-plotfcast(x1,fcast2)
+
+p1a<-ggplot(data=pd,aes(x=date,y=observed)) 
+p1a <- p1a+geom_ribbon(aes(ymin=lo95,ymax=hi95),alpha=0.3,fill="grey20")
+p1a<-p1a+geom_line(aes(colour="data"),size=1)
+p1a<-p1a+geom_line(aes(y=fitted,colour="fit"),size=1)
+p1a<-p1a+geom_point(aes(y=fitted),colour="#218B4F",size=1,shape=21,fill=NA,stroke=2)
+p1a<-p1a+geom_line(aes(y=forecast,colour="prediction"),size=1)
+p1a<-p1a+scale_x_date(name="Año",breaks='1 year',minor_breaks='1 month',labels=date_format("%Y"),expand=c(0,0))
+p1a<-p1a+scale_y_continuous(name="Número de egresos")
+p1a<-p1a+ggtitle("Modelo sin covariantes para egresos hospitalarios totales en Puchuncaví")
+p1a <- p1a + scale_colour_manual(name="",
+                                 values=c(data="black", fit="#218B4F", prediction="#AFFFDD"))
+p1a <- p1a+theme(axis.title.y=element_text(size=15),axis.title.x=element_text(size=15),axis.text.x = element_text(angle=90,hjust=1,size=15), axis.text.y = element_text(size=15), plot.title = element_text(size = 15),legend.text=element_text(size=15),legend.position = c(0.77, 0.9),legend.key = element_rect(colour = "transparent", fill = alpha('grey20', 0.1)),legend.background = element_rect(fill=alpha('grey20', 0)))
+
+p1a
+```
+
+```{r echo=FALSE,fig.cap="***Figura 12.** Errores asociados al modelo sin covariante para egresos totales.*",fig.pos = 'p', fig.width=10,fig.height=1,warning=FALSE,message=FALSE}
+accuracy <- as.data.frame(accuracy(fcast2,test))
+
+d <- head(round(accuracy[,c(2,3,5,6)],digits=2))
+grid.table(d)
+
+```
+
+</center>
+De inmediato, al comparar los resultados para el *Test Set* entre ambos modelos se ve que los resultados no son muy favorables a la hipótesis, por ejemplo, porque el RMSE y el MAE son mayores en el modelo con SO2 como covariante. En general, el modelo que toma en cuenta el SO2 muestra peores resultados. Puede que el SO2 no sea el mejor predictor, es por esto que a continuación se muestran los resultados cuando el procedimiento anterior se generaliza a todos los contaminantes en estudio (SO2, MP10, 03, HCT y HCNM), y se usan todos estos como covariantes en el modelo ARIMA:
+
+<center>
+
+![***Figura 13** Resultado del modelo con todos los covariantes en estudio para egresos totales (sin partos normales).*](plots\hito2\PuchSinPartosLagsMaxCorrSinEstacContaminantesAll.png)
+
+![***Figura 14** Errores asociados al modelo con todos los covariantes en estudio para egresos totales (sin partos normales).*](plots\hito2\PuchSinPartosLagsMaxCorrSinEstacContaminantesAllTable.png)
+
+</center>
+
+Nuevamente se encuentran valores que no favorecen la hipótesis. Si bien agregar todos los contaminantes mejoró el modelo con respecto al que solo toma en cuenta el SO2, aún así este no puede superar al modelo que sin covariantes. Una posible explicación es que entre los egresos totales hay enfermedades que no tienen relación con la contaminación del aire. Para evitar esto, se elegirá un diagnóstico en específico cuyas hospitalizaciones estém asociadas a la contaminación en el aire. Para este experimento se considerará entonces la neumonía, la cual sí se relaciona con la contaminación en el aire. (Chiu et al., 2009). Se realiza entonces el procedimiento ya mencionado, pero esta vez reemplazando la serie de tiempo de egresos totales por la serie de tiempo de los egresos cuyo diágnostico sea neuomonía (códigos del CIE de J120 a J189). Los resultados para el modelo con todos los covariantes son los siguientes (se elimina el medidor de error MAPE en este caso ya que deja de tener sentido cuando hay datos con valor nulo):
+
+<center>
+
+![***Figura 15** Resultado del modelo con todos los covariantes en estudio para egresos de neumonía.*](plots\hito2\PuchNeumoniaLagsMaxCorrSinEstacContaminantesAll.png)
+
+
+![***Figura 16** Errores asociados al modelo con todos los covariantes en estudio para egresos de neumonía.*](plots\hito2\PuchNeumoniaLagsMaxCorrSinEstacContaminantesAllTable.png)
+
+</center>
+
+Para el modelo sin covariantes se tiene lo siguiente:
+
+<center>
+
+![***Figura 17** Resultado del modelo sin covariantes para egresos de neumonía.*](plots\hito2\PuchNeumoniaSinEstacSinContaminantes.png)
+
+![***Figura 18** Errores asociados al modelo sin covariantes para egresos de neumonía.*](plots\hito2\PuchNeumoniaSinEstacSinContaminantesTable.png)
+
+</center>
+
+Nuevamente el modelo que toma en cuenta los contaminantes como covariantes entrega peores resultados predictivos. A estas alturas es posible concluir que la hipótesis no se sostiene a los experimentos. En todos los casos, agregar la contaminación como covariante al modelo ARIMA empeora la capacidad de predicción. Esto puede tener muchas explicaciones, pero se cree que lo más adecuado es intentar con otro modelo predictivo, pues de alguna forma, ARIMA no aprovecha la posible correlación entre la contaminación y los egresos.
+
+## Clasificadores
+
+Luego de trabajar los datos como series de tiempo, se procede a trabajarlos como variables independientes del tiempo, con clasificadores como Decission Tree, Support Vector Machine, Gaussian Naive Bayes y K-Neighbors. Para esto se cambiaron los datos de egresos, pasando de números naturales a tres niveles: altos, medios y bajos.
+
+Así, los datos trabajados para esta parte son los egresos hospitalarios con el diagnósitco "Neumonía", esto para poder comparar el desempeño con los resultados obtenidos con el modelo ARIMA. Los datos son clasificados en nivel alto si hay más de 6 registros de egresos con neumonía en ese mes, medio si son menores o iguales a 6 y mayores a 3 y nivel bajo si son 3 o menos egresos. Estos egresos se juntan en una tabla con los datos de contaminación de Puchuncaví y se trabaja con distintos clasificadores.
+
+### Dummy Classifier
+
+Con el fin de tener una referencia para evaluar el desempeño de los clasificadores primero se entrena un Dummy Classifier, que clasifica aleatoriamente los datos de test. Así, se obtienen los siguientes resultados:
+
+![***Figura 19** Tabla Dummy Classifier.*](plots\tabla_dummy.png)
+
+
+## Conclusión
+
+Con los datos analizados y la nueva experimentación la conclusión parcial que se obtuvo fue que el modelo predictivo basasdo en ARIMA no mejora su poder de predicción al tomar en cuenta los contaminantes, lo cual no favorece a la hipóteis. Sin embargo, este resultado puede ser consecuencia de usar un modelo que no es el adecuado para aprovechar la correlación entre contaminación y egresos hospitalarios, por lo que a futuro se realizarán experimentos utilizando nuevas herramientas más complejas, tales como redes neuronales, y también más simples, como un árbol de decisión, de manera de cubrir una amplio rango de modelos y poder refutar definitivamente la hipótesis. También se baraja la posibilidad de hacer un estudio mucho más riguroso y basado en estudios académicos de índole similar para poder definir claramente si es que hay una correlación relevante o no entre egresos y contaminación en estas comunas.
+
+## Códigos
+
+### Código 1
+```{r echo=TRUE,fig.cap="***Figura 7.** Matriz.*",fig.pos = 'p', fig.width=10,fig.height=5,message=FALSE,warning=FALSE,eval=FALSE}
+library(dtw);
+library(imputeTS);
+
+PSO2estacionpuch <- read.csv("datasets\\contaminacion\\puch\\mensual\\epuchuncaviMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2lagreda <- read.csv("datasets\\contaminacion\\puch\\mensual\\lagredaMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2maitenes <- read.csv("datasets\\contaminacion\\puch\\mensual\\losmaitenesMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2ventanas<- read.csv("datasets\\contaminacion\\puch\\mensual\\ventanasMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+PSO2campiche<- read.csv("datasets\\contaminacion\\puch\\mensual\\campicheMensualSO2.csv", header=TRUE,sep=";", na.strings=c("",NA),dec=",")
+
+data0 <- PSO2estacionpuch[,c(1,3:5)]
+colnames(data0) <- c("Fecha","Validado","Preliminar","NoValidado")
+data0$Fecha <- seq(as.Date("1993/01/01"), as.Date("2018/10/01"), by = "month")
+data0$estPuchuncavi <- rowMeans(data0[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data0 <- data0[,c(1,5)]
+
+data1 <- PSO2lagreda[,c(1,3:5)]
+colnames(data1) <- c("Fecha","Validado","Preliminar","NoValidado")
+data1$Fecha <- seq(as.Date("1993/01/01"), as.Date("2018/10/01"), by = "month")
+data1$lagreda <- rowMeans(data1[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data1 <- data1[,c(1,5)]
+
+data2 <- PSO2maitenes[,c(1,3:5)]
+colnames(data2) <- c("Fecha","Validado","Preliminar","NoValidado")
+data2$Fecha <- seq(as.Date("1993/04/01"), as.Date("2018/10/01"), by = "month")
+data2$maitenes <- rowMeans(data2[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data2 <- data2[,c(1,5)]
+
+data3 <- PSO2ventanas[,c(1,3:5)]
+colnames(data3) <- c("Fecha","Validado","Preliminar","NoValidado")
+data3$Fecha <- seq(as.Date("2013/01/01"), as.Date("2018/10/01"), by = "month")
+data3$ventanas <- rowMeans(data3[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data3 <- data3[,c(1,5)]
+
+data4 <- PSO2campiche[,c(1,3:5)]
+colnames(data4) <- c("Fecha","Validado","Preliminar","NoValidado")
+data4$Fecha <- seq(as.Date("2013/01/01"), as.Date("2017/03/01"), by = "month")
+data4$campiche <- rowMeans(data4[, c("Validado", "Preliminar","NoValidado")], na.rm=TRUE)
+data4 <- data4[,c(1,5)]
+
+
+PSO2 <- merge(data4,merge(data3,merge(merge(data0,data1,by="Fecha",all=T),data2,by="Fecha",all=T),by="Fecha",all=T),by="Fecha",all=T)
+
+PSO2$mean <- rowMeans(PSO2[, 2:6], na.rm=TRUE)
+
+tsPSO2 <- ts(PSO2$mean, start=c(1993,1), end=c(2018,10),frequency=12)
+
+sinpartos <- read.csv("datasets\\time series\\PTotalSinPartosTS.csv");
+x1 <- ts(sinpartos$amount,start=c(2001,1), end=c(2017,12),frequency=12);
+x2 <- na.kalman(tsPSO2);
+start<-c(2003,01);
+end<-c(2003,12);
+x1window <- window(x1,start,end);
+
+alineacionxx<-dtw(x1window,x2,keep=TRUE);
+plot(alineacionxx,type="threeway", main="Alineación de series de tiempo", xlab="Ventana de egresos totales en Puchuncaví año 2003", ylab="SO2 en Puchuncaví")
+```
+### Código 2
+
+```{r echo=TRUE,fig.cap="***Figura 8.** Gráfico de lags vs correlación para SO2.*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE,eval=FALSE}
+library(ggplot2)
+library(corrr)
+library(reshape2)
+library(timeDate)
+library(forecast)
+library(TSA) 
+library(imputeTS)
+library(lubridate)
+library(readxl)
+library(data.table)
+library(TSPred)
+library(dplyr)
+
+#función auxiliar
+elapsed_months <- function(end_date, start_date) {
+  ed <- as.POSIXlt(end_date)
+  sd <- as.POSIXlt(start_date)
+  12 * (ed$year - sd$year) + (ed$mon - sd$mon)
+}
+
+x1 <- ts(sinpartos$amount,start=c(2001,01),end=c(2017,12),frequency=12) ##´elegir TS aca
+x2 <- na.kalman(tsPSO2)
+
+## seleccionar ventana de tiempo de interés
+startx1 <- ymd("2003-01-01")
+endx1 <- ymd("2004-01-01")
+
+x1window <- window(x1,
+start=as.numeric(c(format(as.Date(startx1, format="%Y-%m-%d"),"%Y"),format(as.Date(startx1, format="%Y-%m-%d"),"%m"))),
+end=as.numeric(c(format(as.Date(endx1, format="%Y-%m-%d"),"%Y"),format(as.Date(endx1, format="%Y-%m-%d"),"%m"))))
+
+output <- as.data.frame(cbind(0,0))
+
+colnames(output) <- c("Lag","SO2")
+
+endlag <- elapsed_months(startx1,"1993-01-01")
+
+for (lag in 0:endlag){
+
+  startx2 <- startx1 %m-% months(lag) 
+  endx2 <- endx1 %m-% months(lag) 
+  
+  x2window <- window(
+  x2,
+  start=as.numeric(c(format(as.Date(startx2, format="%Y-%m-%d"),"%Y"),format(as.Date(startx2, format="%Y-%m-%d"),"%m"))),
+  end=as.numeric(c(format(as.Date(endx2, format="%Y-%m-%d"),"%Y"),format(as.Date(endx2, format="%Y-%m-%d"),"%m"))))
+  
+  
+  d1 <- data.frame(x1=as.matrix(x1window))
+  d2 <- data.frame(x2=as.matrix(x2window))
+  
+  d <- cbind(d1,d2)
+  
+  corr <- correlate(d)[1,3]
+  
+  row <-  as.data.frame(cbind(lag,corr))
+  
+  colnames(row) <- c("Lag","SO2")
+  
+  output <- rbind(output,row)
+  
+}
+
+lagVScorrelationEgrSinPartosSO2 <- output[-1,]
+
+outputlong <- melt(lagVScorrelationEgrSinPartosSO2[,c(1,2)], id="Lag") 
+
+colnames(outputlong)[2] <- "Factor"
+
+ggplot(data=outputlong,
+       aes(x=Lag, y=value,colour=Factor)) +
+  geom_line(size=2,color="#FCE61F")+
+  ggtitle("Correlación vs Lag, ventana 01/2003- 01/2004 para egresos totales (sin partos normales) y SO2") + 
+  xlab("Lag (en meses)") + ylab("Correlación")+
+  xlim(0,97)+
+  theme(axis.title.y=element_text(size=15),axis.title.x=element_text(size=15),axis.text.x = element_text(angle=90,hjust=1,size=15), axis.text.y = element_text(size=15), plot.title = element_text(size = 15),legend.text=element_text(size=15),legend.key = element_rect(colour = "transparent", fill = alpha('grey20', 0.1)),legend.background = element_rect(fill=alpha('grey20', 0)))
+
+
+```
+
+### Código 3
+
+```{r echo=TRUE,fig.cap="***Figura 7.** Matriz.*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE,eval=FALSE}
+
+x2 <- na.kalman(tsPSO2)
+x1 <- ts(sinpartos$amount,start=c(2001,1), end=c(2017,12),frequency=12) 
+
+corr <- lagVScorrelationEgrSinPartosSO2
+
+corrtempx2 <- corr[order(corr$SO2,decreasing=T),]
+lagx2 <- corrtempx2[corrtempx2$Lag < 97,]$Lag[1]
+
+
+endTrain <- ymd("2016-12-01") ## fecha de término para train data e egresos
+startTest <-  endTrain %m+% months(1) ## fecha de inicio para test data de egresos
+
+
+startx2Train <- ymd("2001-01-01") %m-% months(lagx2) ## fecha de incio para train data de covariantes (se restan los meses de lag) 
+endx2Train <- endTrain %m-% months(lagx2) ## fecha de término para train data de covariantes (se restan los meses de lag)
+startx2Test <-  endx2Train %m+% months(1) ## fecha de inicio para test data de covariantes
+endx2Test <- ymd("2017-12-01") %m-% months(lagx2)
+
+
+trainx2 <- window(
+  x2,start=as.numeric(c(format(as.Date(startx2Train, format="%Y-%m-%d"),"%Y"),format(as.Date(startx2Train, format="%Y-%m-%d"),"%m"))),
+  end=as.numeric(c(format(as.Date(endx2Train, format="%Y-%m-%d"),"%Y"),format(as.Date(endx2Train, format="%Y-%m-%d"),"%m"))))
+
+train2 <- unclass(trainx2)
+
+testx2 <- window(
+  x2,
+  start=as.numeric(c(format(as.Date(startx2Test, format="%Y-%m-%d"),"%Y"),format(as.Date(startx2Test, format="%Y-%m-%d"),"%m"))),end=as.numeric(c(format(as.Date(endx2Test, format="%Y-%m-%d"),"%Y"),format(as.Date(endx2Test, format="%Y-%m-%d"),"%m"))))
+
+test2 <- unclass(testx2)
+
+train1 <- window(
+  x1,
+  end=as.numeric(c(format(as.Date(endTrain, format="%Y-%m-%d"),"%Y"),format(as.Date(endTrain, format="%Y-%m-%d"),"%m"))))
+
+test1 <- window(
+  x1,
+  start=as.numeric(c(format(as.Date(startTest, format="%Y-%m-%d"),"%Y"),format(as.Date(startTest, format="%Y-%m-%d"),"%m"))))
+
+## modelo ##
+fit1 <- auto.arima(train1, xreg = train2) 
+
+fcast1 <- forecast(fit1, xreg = test2)
+
+
+
+
+plotfcast<-function(dn,fcast){ 
+  require(zoo) #se necesita para la funcion as.yearmon()
+  
+  en<-max(time(fcast$mean)) #extraer la fecha máxima usada en el forecast
+  
+  #extraer training data y datos originales
+  ds<-as.data.frame(window(dn,end=en))
+  names(ds)<-'observed'
+  ds$date<-as.Date(time(window(dn,end=en)))
+  
+  #extraer "fitted data""
+  dfit<-as.data.frame(fcast$fitted)
+  dfit$date<-as.Date(time(fcast$fitted))
+  names(dfit)[1]<-'fitted'
+  
+  ds<-merge(ds,dfit,all.x=T) #Merge fitted values with source and training data
+  
+  #extraer "forecast data" e intervalos de confianza
+  dfcastn<-as.data.frame(fcast)
+  dfcastn$date <- seq(from=startTest,to=ymd("2017-12-01"), by = "month")
+  names(dfcastn)<-c('forecast','lo80','hi80','lo95','hi95','date')
+  
+  pd<-merge(ds,dfcastn,all.x=T) #data.frame final para usar en ggplot
+  return(pd)
+  
+}
+
+
+
+pd<-plotfcast(x1,fcast1) ## fcast1 viene de forecastLagCorrelation.R
+
+
+library(scales)
+
+
+p1a<-ggplot(data=pd,aes(x=date,y=observed)) 
+p1a <- p1a+geom_ribbon(aes(ymin=lo95,ymax=hi95),alpha=0.3,fill="grey20")
+p1a<-p1a+geom_line(aes(colour="data"),size=2)
+p1a<-p1a+geom_line(aes(y=fitted,colour="fit"),size=2)
+p1a<-p1a+geom_point(aes(y=fitted),colour="#218B4F",size=4,shape=21,fill=NA,stroke=2)
+p1a<-p1a+geom_line(aes(y=forecast,colour="prediction"),size=2)
+p1a<-p1a+scale_x_date(name="Año",breaks='1 year',minor_breaks='1 month',labels=date_format("%Y"),expand=c(0,0))
+p1a<-p1a+scale_y_continuous(name="Egresos hospitalarios totales, sin contar partos normales, en Puchuncaví")
+p1a<-p1a+ggtitle("Modelo basado en SO2")
+p1a <- p1a + scale_colour_manual(name="",
+                                 values=c(data="black", fit="#218B4F", prediction="#AFFFDD"))
+p1a <- p1a+theme(axis.title.y=element_text(size=15),axis.title.x=element_text(size=15),axis.text.x = element_text(angle=90,hjust=1,size=15), axis.text.y = element_text(size=10), plot.title = element_text(size = 15),legend.text=element_text(size=15),legend.position = c(0.77, 0.9),legend.key = element_rect(colour = "transparent", fill = alpha('grey20', 0.1)),legend.background = element_rect(fill=alpha('grey20', 0)))
+
+p1a
+
+```
+
+### Código 4
+
+```{r echo=TRUE,fig.cap="***Figura 7.** Matriz.*",fig.pos = 'p', fig.width=10,fig.height=5,warning=FALSE,message=FALSE,eval=FALSE}
+######## MODELO SIN COVARIANTES ########
+train <- window(
+  x1,
+  end=c(2016,12))
+test <- window(
+  x1,
+  start=c(2017,1))
+
+fit2 <- auto.arima(train)
+
+fcast2 <- forecast(fit2,h=length(test))
+```
+
+## Referencias
+
+Chiu, H. F., Cheng, M. H., & Yang, C. Y. (2009). Air pollution and hospital admissions for pneumonia in a subtropical city: Taipei, Taiwan. Inhalation toxicology, *21*(1), 32-37. DOI: 10.1080/08958370802441198
+
+El Mostrador. (21 de agosto de 2018). 30 alumnos resultaron intoxicados por gas desconocido en la comuna de Quintero . Recuperado el 16 de Octubre de 2018, de El Mostrador: http://www.elmostrador.cl/noticias/pais/2018/08/21/30-alumnos-resultaron-intoxicados-por-gas-desconocido-en-la-comuna-de-quintero/
+
+El Mostrador. (23 de agosto de 2018). Crisis ambiental en Quintero: declaran alerta amarilla tras nuevo episodio masivo de intoxicación . Recuperado el 16 de Octubre de 2018, de El Mostrador: http://www.elmostrador.cl/noticias/pais/2018/08/23/mas-de-40-personas-fueron-derivadas-al-hospital-por-nueva-nube-toxica-en-quintero/
+
+Giorgino, T. (2009). “Computing and Visualizing Dynamic Time Warping Alignments in R: The dtw Package.” _Journal of
+Statistical Software_, *31*(7), 1-24. <URL: http://www.jstatsoft.org/v31/i07/>.
+ 
+Gordis, L. (2014). *Epidemiology* (5ta ed.). Philadelphia, PA: Elsevier Saunders. 
+
+Hyndman, R. J. & Khandakar, Y. (2008). “Automatic time series forecasting: the forecast package for R.” _Journal of Statistical
+Software_, *26*(3), 1-22. <URL: http://www.jstatsoft.org/article/view/v027i03>.
+
+Hyndman, R. J. & Athanasopoulos, G. (2018). *Forecasting: Principles and Practice.* OTexts.
+
+Instituto Nacional de Estadísticas. (2014). Proyección de población 2002 - 2020 (actualización 2014). Comunas: Población por sexo y edad simple [Dataset]. Recuperado el 16 de Octubre de 2018, de Instituto Nacional de Estadísticas (INE). Gobierno de Chile: http://www.ine.cl/estadisticas/demograficas-y-vitales
+
+Manosalva, J., & Obrador, P. (21 de Mayo de 2016). Vecinos de Quintero y Puchuncaví marchan en repudio ante nuevo derrame de ENAP. Recuperado el 16 de Octubre de 2018, de Bio Bio Chile: https://www.biobiochile.cl/noticias/2016/05/21/vecinos-de-quintero-y-puchuncavi-marchan-en-repudio-ante-nuevo-derrame-de-enap.shtml
+
+Ministerio del Medio Ambiente. (2018). Sistema de Informacion Nacional de Calidad del Aire (SINCA). Registros de calidad del aire [Dataset]. Recuperado el 16 de Octubre de 2018, de Ministerio del Medio Ambiente. Gobierno de Chile: https://sinca.mma.gob.cl/index.php/busqueda?cache=off&
+
+Minsal. (2017). Egresos Hospitalarios 2001-2017 [Dataset]. Recuperado el 16 de Octubre de 2018, de Ministerio de Salud, Departamento de Estadísticas e Información de Salud (DEIS) Gobierno de Chile: https://reportesdeis.minsal.cl/Egresos2001_2016/egresos_2003/egresos.asp
+
+Moritz, S., Bartz-Beielstein, T. (2017). "imputeTS: Time Series Missing Value Imputation in R." _The R Journal_, *9*(1),
+207-218. <URL: https://journal.r-project.org/archive/2017/RJ-2017-009/index.html>.
+
+Nsoesie, E.O., Mekaru, S.R., Ramakrishnan, N., Marathe M.V. & Brownstein, J.S. (2014) Modeling to Predict Cases of Hantavirus Pulmonary Syndrome in Chile. PLoS
+Negl Trop Dis 8(4): e2779. doi:10.1371/journal.pntd.0002779
+
+Núñez, M. J., & Olguín, A. (1 de Septiembre de 2018). Los dolores que aquejan a Quintero y Puchuncaví. Recuperado el 16 de Octubre de 2018, de La Tercera: https://www.latercera.com/reportajes/noticia/los-dolores-aquejan-quintero-puchuncavi/303300/
+
+Pras: Progrma para la Recuperación Ambiental y Social. (2016). Historia ambiental de Quintero y Puchuncaví. Recuperado el 16 de Octubre de 2018, de Pras.gob: https://pras.mma.gob.cl/desarrollo_historico_ventanas/
+
+Solis, C. (3 de Octubre de 2014). Derrame de petróleo en la bahía de Quintero fue de 22 mil litros y no 3 mil. Recuperado el 16 de Octubre de 2018, de 24 Horas: https://www.24horas.cl/nacional/derrame-de-petroleo-en-la-bahia-de-quintero-fue-de-22-mil-litros-y-no-3-mil-1438528
+
+The Clinic. (23 de Febrero de 2012). Bañistas de “las termas” de Ventanas se exponen a aguas ultra contaminadas. Recuperado el 16 de Octubre de 2018, de The Clinic: http://www.theclinic.cl/2012/02/23/banistas-de-las-termas-de-ventanas-se-exponen-a-aguas-ultra-contraminadas/

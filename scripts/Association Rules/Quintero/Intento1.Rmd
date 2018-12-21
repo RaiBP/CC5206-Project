@@ -1,0 +1,68 @@
+---
+title: "Clasificadores"
+author: "Juan Saez Hidalgo"
+date: "14 de diciembre de 2018"
+output:
+  html_document:
+    theme: cosmo
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Quintero
+
+```{r, echo=FALSE}
+HIGH <- 150
+```
+
+
+## Importar y modificar datos de contaminación
+
+```{r}
+QMP10 <- read.csv('datasets/contaminacion/QMP10.csv', row.names = 1)
+QS02 <- read.csv('datasets/contaminacion/QSO2.csv', row.names = 1)
+```
+
+Egresos hospitalarios:
+
+```{r}
+Qmensual <- read.csv('datasets/Association Rules/Egresos por fecha/QuinteroMensual', row.names = 1)
+```
+
+Generar el dataset para clasificar:
+
+```{r}
+quin <- data.frame(month = c(), amount = c())
+
+for (year in 2001:2017){
+  if(year == 2011){# No existen datos para 2011
+    }
+  else{
+    for (m in 1:9){
+      temp <- data.frame(month = c(''), amount = c(''))
+      temp2 <- paste(year, '-0', m, sep = '')
+      print (temp2)
+      temp$month <- temp2
+      temp$amount <- 
+        with(Qmensual,
+             Qmensual[month == paste(temp2, '-01', sep =''),
+                      2]) > HIGH
+      quin <- rbind(quin, temp)
+    }
+    for (m in 10:12){
+      temp <- data.frame(month = c(''), amount = c(''))
+      temp2 <- paste(year, '-', m, sep = '')
+      temp$month <- temp2
+      temp$amount <- 
+        with(Qmensual,
+             Qmensual[month == paste(temp2, '-01', sep =''),
+                      2]) > HIGH
+      quin <- rbind(quin, temp)
+    }
+  }
+}
+```
+

@@ -199,6 +199,13 @@ ggplot(data=MP10long,
 
 Se ve claramente un peak de ambas concentraciones y en ambas localidades alrededor del año 1995. También se nota que el MP10 en Quintero ha estado en aumento la última década, pero el resto de indicadores se han mantenido relativamente constantes en este mismo período en ambas localidades. Si bien a simple vista no se ve una correlación clara entre las incidencias de las enfermedades de las Figuras 2, 3 y 4 y las concentraciones de SO2 y MP10, con técnicas estadísticas más avanzadas podría ser posible establecer una correlación, pero esto se escapa de los objetivos del presente informe.
 
+### Clasificadores
+
+```{python}
+a = 3 + 2
+```
+
+
 ## Conclusión
 
 Con los datos analizados se concluye que vale la pena seguir analizando la posible correlación entre ciertas enfermedades y la contaminación en la zona de Quintero y Puchuncaví. Si bien para establecer una causalidad se requiere de un estudio mucho más riguroso, se encntró que con el análisis epidemológico más simple se observa fuerte asociación para algunos de los diagnósticos y esto queda en evidencia al notar el alto riesgo relativo de estos con respecto al resto del país, y al observar la evolución temporal . Esto es sumamente preocupante, debido a la cantidad de vidas que potencialmente se verán afectadas a futuro, pues no sólo afecta la calidad de vida de los habitantes actuales, si no que empeora la calidad de vida de los que están por nacer ahí. 

@@ -574,6 +574,45 @@ Con el fin de tener una referencia para evaluar el desempeño de los clasificado
 
 ![***Figura 19** Tabla Dummy Classifier.*](plots\tabla_dummy.png)
 
+### Decission Tree Classifier
+
+El primer clasificador utilizado es el algoritmo de árbol de decisión. Pese a mejorar el _accuracy_, este sigue siendo menor a Dummy Clasifier.
+
+![***Figura 20** Decission Tree Classifier.*](plots\tabla_decission_tree.png)
+
+Comparando los _f1-score_, solo para tener una métrica demparación. Con este clasificador disminuye la proporción obtenida con el _support_.
+
+### Support Vector Machine Clasiffier
+
+Con el clasificador SVM se obtiene un aun mejor _accuracy_ más cercano al 50%, pero aun sin superarlo. Las métricas siguen siendo inferiores a 0.5, excepto las métricas de la clase "Medio", lo cual puede ser por la simple sobrerepresentación.
+
+![***Figura 21** Support Vector Machine Clasiffier.*](plots\tabla_svm.png)
+
+### Gaussian Naive Bayes
+
+El algoritmo _Naive Bayes_ gaussiano obtuvo un más bajo _accuracy_.
+
+![***Figura 22** Gaussian Naive Bayes.*](plots\tabla_gnb.png)
+
+### K Neighbors Classifier
+
+El último clasificador usado fue el algoritmo de K vecinos, utilizando un k = 5. Este hiperparámetro fue escogido realizando la clasificación con k entre 1 a 10 y dejando el que tuvo mejores métricas (con k=7 y k=8 se obtuvieron el mismo _accuracy_ y métricas similares). Con este algoritmo se obtuvo un mejor _accuracy_ y mejores métricas, sin embargo este aun no alcanza el 50% de _accuracy_.
+
+![***Figura 23** K Neighbors Classifier.*](plots\tabla_knn.png)
+
+### Cambios en el dataset de clasificación
+
+Debido a comentarios realizados durante la presentación se decidió hacer una última clasificación utilizando más datos. Estos datos fueron recuperados evitando la eliminación de filas en las que un contaminador en específico poseía datos faltantes. 
+
+Como clasificador se usó el algoritmo SVM, ya que con este se obtuvieron las mejores métricas.
+
+Los datos obtenidos se muestran a continuación:
+
+![***Figura 24** Support Vector Machine Clasiffier con contaminante HCNm.*](plots\tabla_svmHCNM.png)
+
+![***Figura 25** Support Vector Machine Clasiffier con contaminante HCt.*](plots\tabla_svmHCt.png)
+
+Se aprecía que la métrica no mejora.
 
 ## Conclusión
 
